@@ -21,3 +21,7 @@ def get_greeting() -> str:
     else:
         greeting = 'Доброй ночи!'
     return greeting
+
+
+if __name__ == '__main__':
+    print(get_greeting())
