@@ -11,6 +11,7 @@ def get_greeting() -> str:
     hh = current_date_time.hour
     mm = current_date_time.minute
     ss = current_date_time.second
+    #hh = 10
 
     if hh in range(5, 11) or (hh == 4 and (mm > 0 or ss > 0)) or (hh == 11 and (mm == 0 or ss == 0)):
         greeting = 'Доброе утро!'
