@@ -3,7 +3,7 @@ import os
 import pandas as pd
 # from collections import Counter
 import datetime
-from external_api import get_rub_transaction_amount
+from src.external_api import get_rub_transaction_amount
 
 PATH_TO_OPERATIONS_XLSX_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "operations.xlsx")
 

@@ -12,7 +12,7 @@ api_key = os.getenv('API_KEY')
 
 def get_rub_transaction_amount(transaction: dict) -> float:
     """
-    Функция возвращает сумму транзакции (amount) в рублях, тип данных — float.
+    Функция возвращает сумму транзакции в рублях, тип данных — float.
     Если транзакция была в USD или EUR, происходит обращение к внешнему API
     для получения текущего курса валют и конвертации суммы операции в рубли
     """
@@ -32,10 +32,12 @@ def get_rub_transaction_amount(transaction: dict) -> float:
             "to": "RUB"
         }
         response = requests.get(url, headers=headers, params=payload)
-        result_amount = response.json().get("result") * (-1) ** (transaction.get("Сумма операции") < 0)
+
+        sign = (-1) ** (transaction.get("Сумма операции") < 0)
+        result_amount = response.json().get("result") * sign
         # status_code = response.status_code
 
-    return float(result_amount)
+    return round(result_amount, 2)
 
 
 if __name__ == '__main__':
