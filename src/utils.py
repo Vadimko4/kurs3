@@ -94,7 +94,7 @@ def get_card_total_rub_spent(operations_list: list[dict]) -> float:
 
 
 if __name__ == '__main__':
-    # print(get_greeting())
+    print(get_greeting())
     # operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     # operations = filter_by_state(operations, 'FAILED')
     # print(operations[874: 894])

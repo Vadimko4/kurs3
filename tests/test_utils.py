@@ -1,6 +1,9 @@
 from unittest.mock import patch
+
+import pytest
+
 from src.utils import (get_greeting, get_operations_from_xlsx,
-                       PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state)
+                       PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state, get_card_total_rub_spent)
 
 
 @patch("src.utils.datetime.datetime")
@@ -55,3 +58,15 @@ def test_filter_by_state(test_operation_list) -> None:
                     'Сумма операции с округлением': 90000.0
                 }
             ])
+
+
+@pytest.mark.parametrize('wrong_state', ['CANCELED', 'EXECUTED', ' '])
+def test_filter_by_wrong_state(wrong_state, test_operation_list):
+    with pytest.raises(ValueError):
+        filter_by_state(test_operation_list, wrong_state)
+
+
+def test_get_card_total_rub_spent(test_operation_list):
+    assert get_card_total_rub_spent(test_operation_list[4: 6]) == 20300.00
+    assert get_card_total_rub_spent(test_operation_list[0:1]) == -250.00
+    assert get_card_total_rub_spent([]) == 0.00
