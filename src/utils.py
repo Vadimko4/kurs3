@@ -43,7 +43,22 @@ def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
     return transactions_list
 
 
+def filter_by_state(operations: list[dict], state: str = 'OK') -> list[dict]:
+    """
+    Принимает список всех операций - возвращает только те, у которых статус = state
+    По умолчанию статус равен ОК
+    """
+    # убираем транзакции, в которых нет ключа "state"
+    operations = [i for i in operations if not i.get('Статус') is None]
+
+    if state not in ['OK', 'FAILED']:
+        raise ValueError('Ошибочный статус операции!')
+
+    return [operation for operation in operations if operation.get('Статус') == state]
+
+
 if __name__ == '__main__':
     print(get_greeting())
-    print(PATH_TO_OPERATIONS_XLSX_FILE)
-    print(get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)[:5])
+    operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+    #operations = filter_by_state(operations, 'FAILED')
+    print(operations[874: 894])
