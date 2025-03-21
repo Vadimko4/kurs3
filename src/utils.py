@@ -1,4 +1,9 @@
+import os
+
+import pandas as pd
 import datetime
+
+PATH_TO_OPERATIONS_XLSX_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "operations.xlsx")
 
 
 def get_greeting() -> str:
@@ -24,5 +29,21 @@ def get_greeting() -> str:
     return greeting
 
 
+def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
+    """
+    считывает список транзакций-операций (словари) из xlsx файла
+    """
+    try:
+        excel_data = pd.read_excel(xlsx_file_name)
+        transactions_list = excel_data.to_dict(orient='records')
+
+    except Exception:
+        transactions_list = []
+
+    return transactions_list
+
+
 if __name__ == '__main__':
     print(get_greeting())
+    print(PATH_TO_OPERATIONS_XLSX_FILE)
+    print(get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)[:5])
