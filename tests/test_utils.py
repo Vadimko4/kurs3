@@ -55,3 +55,6 @@ def test_filter_by_state(test_operation_list) -> None:
                     'Сумма операции с округлением': 90000.0
                 }
             ])
+
+
+
