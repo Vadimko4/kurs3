@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import numpy as np
 # from collections import Counter
 import datetime
 from src.external_api import get_rub_transaction_amount
@@ -109,11 +110,25 @@ def filter_by_card(operations_list: list[dict], card_number: str) -> list[dict]:
 
 def get_card_total_rub_spent(operations_list: list[dict]) -> float:
     """
-    Из списка операций возращает суммарные траты в рублях по указанной карте
+    Из списка операций возращает суммарные траты в рублях по всем картам, которые представлены в списке
     """
     total_spent_sum = sum(get_rub_transaction_amount(i) for i in operations_list)
 
     return total_spent_sum
+
+
+def get_card_cashback_rub(operations_list: list[dict]) -> float:
+    """
+    Из списка операций возращает суммарный кешбэк в рублях.
+    Так как он представлен только в рублях - перевод из иностранной валюты не производится
+    """
+    # убираем транзакции, в которых нет ключа "Кэшбэк" или он есть, но пустой (nan)
+    operations_list = [i for i in operations_list if (not i.get('Кэшбэк') is None) and
+                       (not np.isnan(i.get('Кэшбэк', np.nan)))]  # как обрабатывать nan
+
+    cashback_sum = sum(i.get('Кэшбэк') for i in operations_list)
+
+    return cashback_sum
 
 
 # def get_categories_count(operations_list: list[dict], categories_list: list[str]) -> dict:
@@ -132,5 +147,4 @@ if __name__ == '__main__':
     print(get_greeting())
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     # operations = filter_by_state(operations, 'FAILED')
-    print(operations[874: 894])
-    print(operations[874]['Кэшбэк'] != '111')
+    print(get_card_cashback_rub(operations[874: 894]))  # [874: 894], кэшбэк есть с 831
