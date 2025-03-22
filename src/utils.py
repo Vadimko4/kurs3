@@ -128,7 +128,7 @@ def get_card_cashback_rub(operations_list: list[dict]) -> float:
 
     cashback_sum = sum(i.get('Кэшбэк') for i in operations_list)
 
-    return cashback_sum
+    return round(cashback_sum, 2)
 
 
 # def get_categories_count(operations_list: list[dict], categories_list: list[str]) -> dict:
