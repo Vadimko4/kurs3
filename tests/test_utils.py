@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 
 from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
-                       get_data_obj_from_str_data, filter_by_date, filter_by_card, get_card_total_rub_spent,
+                       get_date_obj_from_str_date, filter_by_date, filter_by_card, get_card_total_rub_spent,
                        get_card_cashback_rub)
 
 
@@ -69,9 +69,9 @@ def test_filter_by_wrong_state(wrong_state, test_operation_list):
         filter_by_state(test_operation_list, wrong_state)
 
 
-def test_get_data_obj_from_str_data():
+def test_get_date_obj_from_str_date():
     expected_date = datetime.datetime(2021, 7, 26, 20, 35, 57)
-    assert get_data_obj_from_str_data('26.07.2021 20:35:57') == expected_date
+    assert get_date_obj_from_str_date('26.07.2021 20:35:57') == expected_date
 
 
 @pytest.mark.parametrize('start_data, end_data, expected', [

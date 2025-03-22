@@ -59,7 +59,7 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
     return [operation for operation in operations_list if operation.get('Статус') == state]
 
 
-def get_data_obj_from_str_data(str_date: str) -> datetime:
+def get_date_obj_from_str_date(str_date: str) -> datetime:
     """
     переводит строковое отображение даты вида '26.07.2021 20:35:57' 
     в объект библиотеки datetime
@@ -77,20 +77,20 @@ def get_data_obj_from_str_data(str_date: str) -> datetime:
     return result_date
     
     
-def filter_by_date(operations_list: list[dict], start_data_str: str, end_data_str: str) -> list[dict]:
+def filter_by_date(operations_list: list[dict], start_date_str: str, end_date_str: str) -> list[dict]:
     """
     фильтрует список операций по дате: от start_data включительно, до end_data включительно
     """
     # убираем транзакции, в которых нет ключа "Дата операции"
     operations_list = [i for i in operations_list if not i.get('Дата операции') is None]
 
-    start_data = get_data_obj_from_str_data(start_data_str)
-    end_data = get_data_obj_from_str_data(end_data_str)
+    start_data = get_date_obj_from_str_date(start_date_str)
+    end_data = get_date_obj_from_str_date(end_date_str)
 
     result_list = []
     for operation in operations_list:
         str_date = operation.get('Дата операции')
-        operation_date = get_data_obj_from_str_data(str_date)
+        operation_date = get_date_obj_from_str_date(str_date)
         if start_data <= operation_date <= end_data:
             result_list.append(operation)
 
