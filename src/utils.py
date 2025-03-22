@@ -76,12 +76,15 @@ def get_data_obj_from_str_data(str_date: str) -> datetime:
     return result_date
     
     
-def filter_by_date(operations_list: list[dict], start_data: datetime, end_data: datetime) -> list[dict]:
+def filter_by_date(operations_list: list[dict], start_data_str: str, end_data_str: str) -> list[dict]:
     """
     фильтрует список операций по дате: от start_data включительно, до end_data включительно
     """
     # убираем транзакции, в которых нет ключа "Дата платежа"
     operations_list = [i for i in operations_list if not i.get('Дата операции') is None]
+
+    start_data = get_data_obj_from_str_data(start_data_str)
+    end_data = get_data_obj_from_str_data(end_data_str)
 
     result_list = []
     for operation in operations_list:
@@ -126,7 +129,7 @@ if __name__ == '__main__':
     # operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     # operations = filter_by_state(operations, 'FAILED')
     # print(operations[874: 894])
-    print(get_card_total_rub_spent(
+    print(filter_by_date(
         [
             {
                 'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
@@ -186,5 +189,4 @@ if __name__ == '__main__':
                 'Кэшбэк': None, 'Категория': 'Супермаркеты', 'MCC': 5411.0, 'Описание': 'Колхоз',
                 'Бонусы (включая кэшбэк)': 1, 'Округление на инвесткопилку': 0,
                 'Сумма операции с округлением': 82.0
-            }]
-    ))
+            }], '25.07.2025 00:00:00', '26.07.2025 00:00:00'))

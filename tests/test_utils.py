@@ -73,8 +73,8 @@ def test_get_data_obj_from_str_data():
 
 
 @pytest.mark.parametrize('start_data, end_data, expected', [
-    (get_data_obj_from_str_data('26.07.2021'),
-     get_data_obj_from_str_data('27.07.2021'),
+    ('26.07.2021',
+     '27.07.2021',
      [
         {
             'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
@@ -94,8 +94,8 @@ def test_get_data_obj_from_str_data():
         }
      ]
      ),
-    (get_data_obj_from_str_data('25.07.2021 00:00:00'),
-     get_data_obj_from_str_data('26.07.2021 19:00:00'),
+    ('25.07.2021 00:00:00',
+     '26.07.2021 19:00:00',
      [
         {
             'Дата операции': '26.07.2021 18:55:26', 'Дата платежа': '26.07.2021',
@@ -115,9 +115,13 @@ def test_get_data_obj_from_str_data():
             'Сумма операции с округлением': 43.0
         }
      ]
+     ),
+    ('25.07.2025',
+     '26.07.2025',
+     []
      )])
 def test_filter_by_date(test_operation_list, start_data, end_data, expected):
-    assert filter_by_date(test_operation_list, start_data, end_data)
+    assert filter_by_date(test_operation_list, start_data, end_data) == expected
 
 
 def test_get_card_total_rub_spent(test_operation_list):
