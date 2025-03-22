@@ -100,7 +100,11 @@ def filter_by_card(operations_list: list[dict], card_number: str) -> list[dict]:
     """
     фильтрует список операций по номеру карты
     """
-    pass
+    # убираем транзакции, в которых нет ключа "Номер карты"
+    operations_list = [i for i in operations_list if not i.get('Номер карты') is None]
+
+    operations_list = [i for i in operations_list if i.get('Номер карты') == card_number]
+    return operations_list
 
 
 def get_card_total_rub_spent(operations_list: list[dict]) -> float:
@@ -189,4 +193,5 @@ if __name__ == '__main__':
                 'Кэшбэк': None, 'Категория': 'Супермаркеты', 'MCC': 5411.0, 'Описание': 'Колхоз',
                 'Бонусы (включая кэшбэк)': 1, 'Округление на инвесткопилку': 0,
                 'Сумма операции с округлением': 82.0
-            }], '25.07.2025 00:00:00', '26.07.2025 00:00:00'))
+            }],
+        '25.07.2025 00:00:00', '26.07.2025 00:00:00'))
