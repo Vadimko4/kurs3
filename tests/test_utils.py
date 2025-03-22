@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from src.utils import (get_greeting, get_operations_from_xlsx,
-                       PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state, get_card_total_rub_spent)
+from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
+                       filter_by_date, get_card_total_rub_spent)
 
 
 @patch("src.utils.datetime.datetime")
@@ -64,6 +64,10 @@ def test_filter_by_state(test_operation_list) -> None:
 def test_filter_by_wrong_state(wrong_state, test_operation_list):
     with pytest.raises(ValueError):
         filter_by_state(test_operation_list, wrong_state)
+
+
+@pytest.mark.parametrize('start_data, end_data, expected', [()])
+def test_filter_by_date(test_operation_list)
 
 
 def test_get_card_total_rub_spent(test_operation_list):

@@ -58,6 +58,21 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
     return [operation for operation in operations_list if operation.get('Статус') == state]
 
 
+def get_data_obj_from_str_data(str_date: str) -> datetime:
+    """
+    переводит строковое отображение даты вида '26.07.2021 20:35:57' 
+    в объект библиотеки datetime
+    """
+    year = int(str_date.split()[0].split('.')[2])
+    month = int(str_date.split()[0].split('.')[1])
+    day = int(str_date.split()[0].split('.')[0])
+    hour = int(str_date.split()[1].split(':')[0])
+    minute = int(str_date.split()[1].split(':')[1])
+    second = int(str_date.split()[1].split(':')[2])
+    result_date = datetime.datetime(year, month, day, hour, minute, second)
+    return result_date
+    
+    
 def filter_by_date(operations_list: list[dict], start_data: datetime, end_data: datetime) -> list[dict]:
     """
     фильтрует список операций по дате: от start_data включительно, до end_data включительно
@@ -67,14 +82,8 @@ def filter_by_date(operations_list: list[dict], start_data: datetime, end_data: 
 
     result_list = []
     for operation in operations_list:
-        str_operation_date = operation.get('Дата операции')
-        year = int(str_operation_date.split()[0].split('.')[2])
-        month = int(str_operation_date.split()[0].split('.')[1])
-        day = int(str_operation_date.split()[0].split('.')[0])
-        hour = int(str_operation_date.split()[1].split(':')[0])
-        minute = int(str_operation_date.split()[1].split(':')[1])
-        second = int(str_operation_date.split()[1].split(':')[2])
-        operation_date = datetime.datetime(year, month, day, hour, minute, second)
+        str_date = operation.get('Дата операции')
+        operation_date = get_data_obj_from_str_data(str_date)
         if start_data <= operation_date <= end_data:
             result_list.append(operation)
 
