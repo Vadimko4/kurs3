@@ -63,6 +63,9 @@ def get_data_obj_from_str_data(str_date: str) -> datetime:
     переводит строковое отображение даты вида '26.07.2021 20:35:57' 
     в объект библиотеки datetime
     """
+    if len(str_date) == 10:  # дата вида 26.07.2021 - временнАя часть отсутствует
+        str_date = f"{str_date} 00:00:00"
+
     year = int(str_date.split()[0].split('.')[2])
     month = int(str_date.split()[0].split('.')[1])
     day = int(str_date.split()[0].split('.')[0])
