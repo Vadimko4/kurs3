@@ -62,7 +62,23 @@ def filter_by_date(operations_list: list[dict], start_data: datetime, end_data: 
     """
     фильтрует список операций по дате: от start_data включительно, до end_data включительно
     """
-    pass
+    # убираем транзакции, в которых нет ключа "Дата платежа"
+    operations_list = [i for i in operations_list if not i.get('Дата операции') is None]
+
+    result_list = []
+    for operation in operations_list:
+        str_operation_date = operation.get('Дата операции')
+        year = int(str_operation_date.split()[0].split('.')[2])
+        month = int(str_operation_date.split()[0].split('.')[1])
+        day = int(str_operation_date.split()[0].split('.')[0])
+        hour = int(str_operation_date.split()[1].split(':')[0])
+        minute = int(str_operation_date.split()[1].split(':')[1])
+        second = int(str_operation_date.split()[1].split(':')[2])
+        operation_date = datetime.datetime(year, month, day, hour, minute, second)
+        if start_data <= operation_date <= end_data:
+            result_list.append(operation)
+
+    return result_list
 
 
 def filter_by_card(operations_list: list[dict], card_number: str) -> list[dict]:

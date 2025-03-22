@@ -1,10 +1,14 @@
+from datetime import datetime
+
 import pandas as pd
+
 from utils import filter_by_state, PATH_TO_OPERATIONS_XLSX_FILE, get_operations_from_xlsx
 
 
-def get_cards_information(operations_list: list[dict]) -> list[dict]:
+def get_cards_information(operations_list: list[dict], target_date: datetime) -> list[dict]:
     """
-    Принимает список словарей с данными о банковских операциях,
+    Принимает список словарей с данными о банковских операциях, и целевую дату - с начала месяца по которую
+    нужно сформировать отчёт;
     возвращает список словарей, содержащих сводную информацию по картам, которые фигурируют
     во входном списке операций: последние 4 цифры номера карты, общая сумма расходов,
     кешбэк (1 рубль на каждые 100 рублей)
