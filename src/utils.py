@@ -48,7 +48,7 @@ def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
     return transactions_list
 
 
-def get_currency_list_from_json(file_name: str = '') -> list[dict]:
+def get_currency_list_from_json(file_name: str = '') -> list[str]:
     """
     Функция принимает на вход путь до JSON-файла,
     считывает из него и возвращает список валют пользователя
