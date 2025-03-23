@@ -40,6 +40,26 @@ def get_rub_transaction_amount(transaction: dict) -> float:
     return round(result_amount, 2)
 
 
+def get_currency_too_rub_rate(currency: str) -> float:
+    """
+    Функция возвращает актуальный курс указанной валюты к рублю
+    """
+    url = "https://api.apilayer.com/exchangerates_data/convert"
+    headers = {
+        "apikey": api_key
+    }
+    payload = {
+        "amount": 1.00,
+        "from": currency,
+        "to": "RUB"
+    }
+    response = requests.get(url, headers=headers, params=payload)
+
+    result_amount = response.json().get("info").get("rate")
+    # status_code = response.status_code
+    return round(result_amount, 2)
+
+
 if __name__ == '__main__':
     print(get_rub_transaction_amount({
                 'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
@@ -49,3 +69,4 @@ if __name__ == '__main__':
                 'MCC': 4814.0, 'Описание': 'МТС', 'Бонусы (включая кэшбэк)': 0,
                 'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 250.0
             }))
+    print(get_currency_too_rub_rate('USD'))
