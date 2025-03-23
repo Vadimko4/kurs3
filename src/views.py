@@ -2,7 +2,7 @@ import pandas as pd
 
 from utils import (PATH_TO_OPERATIONS_XLSX_FILE, get_operations_from_xlsx, filter_by_state, filter_by_date,
                    filter_by_card, get_card_total_rub_spent, get_card_cashback_rub,
-                   PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json)
+                   PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json, get_stock_list_from_json)
 from external_api import get_rub_transaction_amount, get_currency_too_rub_rate
 
 
@@ -88,3 +88,6 @@ if __name__ == '__main__':
     # получаем список валют пользователя
     currencies = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
     print(get_currency_rates(currencies))
+
+    # получаем список акций пользователя
+    stocks = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)

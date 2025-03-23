@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 # Загрузка переменных из .env-файла
 load_dotenv()
 
-# Получение значения переменной GITHUB_TOKEN из .env-файла
-api_key = os.getenv('API_KEY')
+# Получение значения переменных GITHUB_TOKEN из .env-файла
+currency_api_key = os.getenv('CURRENCY_API_KEY')
+stocks_api_key = os.getenv('STOCKS_API_KEY')
 
 
 def get_rub_transaction_amount(transaction: dict) -> float:
@@ -24,7 +25,7 @@ def get_rub_transaction_amount(transaction: dict) -> float:
     else:
         url = "https://api.apilayer.com/exchangerates_data/convert"
         headers = {
-            "apikey": api_key
+            "apikey": currency_api_key
         }
         payload = {
             "amount": abs(transaction.get("Сумма операции")),
@@ -32,10 +33,11 @@ def get_rub_transaction_amount(transaction: dict) -> float:
             "to": "RUB"
         }
         response = requests.get(url, headers=headers, params=payload)
+        # status_code = response.status_code
 
         sign = (-1) ** (transaction.get("Сумма операции") < 0)
         result_amount = response.json().get("result") * sign
-        # status_code = response.status_code
+
 
     return round(result_amount, 2)
 
@@ -46,7 +48,7 @@ def get_currency_too_rub_rate(currency: str) -> float:
     """
     url = "https://api.apilayer.com/exchangerates_data/convert"
     headers = {
-        "apikey": api_key
+        "apikey": currency_api_key
     }
     payload = {
         "amount": 1.00,
@@ -60,13 +62,31 @@ def get_currency_too_rub_rate(currency: str) -> float:
     return round(result_amount, 2)
 
 
+def get_stock_rub_price(stock: str) -> float:
+    """
+    Функция возвращает актуальную стоимость указанной акции в рублях
+    """
+    url = f"https://api.marketstack.com/v1/eod?access_key={stocks_api_key}"
+    querystring = {"symbols": stock}
+    response = requests.get(url, params=querystring)
+    # status_code = response.status_code
+
+    #  вытаскиваем из ответа json цену на момент открытия в ближайший прошедший торговый день и из USD конвертим в рубли
+    result_amount = get_rub_transaction_amount(
+        {"Сумма операции": response.json().get('data')[0].get('open'),
+         "Валюта операции": "USD"})
+
+    return round(result_amount, 2)
+
+
 if __name__ == '__main__':
     print(get_rub_transaction_amount({
                 'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
                 'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': -135.0,
-                'Валюта операции': 'TRY', 'Сумма платежа': -250.0,
+                'Валюта операции': 'USD', 'Сумма платежа': -250.0,
                 'Валюта платежа': 'RUB', 'Кэшбэк': None, 'Категория': 'Связь',
                 'MCC': 4814.0, 'Описание': 'МТС', 'Бонусы (включая кэшбэк)': 0,
                 'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 250.0
             }))
     print(get_currency_too_rub_rate('USD'))
+    print(get_stock_rub_price('TSLA'))
