@@ -1,7 +1,8 @@
 import pandas as pd
 
 from utils import (PATH_TO_OPERATIONS_XLSX_FILE, get_operations_from_xlsx, filter_by_state, filter_by_date,
-                   filter_by_card, get_card_total_rub_spent, get_card_cashback_rub)
+                   filter_by_card, get_card_total_rub_spent, get_card_cashback_rub,
+                   PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json)
 from external_api import get_rub_transaction_amount
 
 
@@ -54,7 +55,13 @@ def get_top_five_transactions(operations_list: list[dict]) -> list[dict]:
     return top_five_list
 
 
-def get_currency_rates(date: str) -> list[dict]:
+def get_currency_rates(currency_list: list[str]) -> list[dict]:
+    """
+    Принимает список валют;
+    возвращает список словарей, курсы валют к рублю в виде:
+    "currency": "USD",
+    "rate": 73.21
+    """
     pass
 
 

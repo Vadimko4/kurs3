@@ -2,11 +2,14 @@ import os
 
 import pandas as pd
 import numpy as np
+import json
+
 # from collections import Counter
 import datetime
 from src.external_api import get_rub_transaction_amount
 
 PATH_TO_OPERATIONS_XLSX_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "operations.xlsx")
+PATH_TO_USER_SETTINGS_JSON_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "user_settings.json")
 
 
 def get_greeting() -> str:
@@ -43,6 +46,25 @@ def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
         transactions_list = []
 
     return transactions_list
+
+
+def get_currency_list_from_json(file_name: str = '') -> list[dict]:
+    """
+    Функция принимает на вход путь до JSON-файла,
+    считывает из него и возвращает список валют пользователя
+    """
+    try:
+        with open(file_name, encoding='utf-8') as f:
+            list_of_currency = json.load(f).get("user_currencies")
+        # utils_logger.info('Успешное чтение из файла')
+
+    except Exception as e:
+        list_of_currency = []
+        # utils_logger.error(f'Произошла ошибка: {e}', exc_info=True)
+
+    # if not fin_transactions:
+    #     utils_logger.warning('Список транзакций пуст')
+    return list_of_currency
 
 
 def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict]:
@@ -145,6 +167,9 @@ def get_card_cashback_rub(operations_list: list[dict]) -> float:
 
 if __name__ == '__main__':
     print(get_greeting())
+    curr_list = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+    print(curr_list)
+
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     # operations = filter_by_state(operations, 'FAILED')
     print(get_card_cashback_rub(operations[874: 894]))  # [874: 894], кэшбэк есть с 831
