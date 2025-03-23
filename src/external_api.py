@@ -35,7 +35,7 @@ def get_rub_transaction_amount(transaction: dict) -> float:
         response = requests.get(url, headers=headers, params=payload)
         # status_code = response.status_code
 
-        sign = (-1) ** (transaction.get("Сумма операции") < 0)
+        sign = (-1) ** int(transaction.get("Сумма операции") < 0)
         result_amount = response.json().get("result") * sign
 
 
@@ -56,6 +56,7 @@ def get_currency_too_rub_rate(currency: str) -> float:
         "to": "RUB"
     }
     response = requests.get(url, headers=headers, params=payload)
+    print(response.json())
 
     result_amount = response.json().get("info").get("rate")
     # status_code = response.status_code
