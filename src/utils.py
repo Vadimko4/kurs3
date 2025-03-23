@@ -67,6 +67,25 @@ def get_currency_list_from_json(file_name: str = '') -> list[str]:
     return list_of_currency
 
 
+def get_stock_list_from_json(file_name: str = '') -> list[str]:
+    """
+    Функция принимает на вход путь до JSON-файла,
+    считывает из него и возвращает список валют пользователя
+    """
+    try:
+        with open(file_name, encoding='utf-8') as f:
+            list_of_stocks = json.load(f).get("user_stocks")
+        # utils_logger.info('Успешное чтение из файла')
+
+    except Exception as e:
+        list_of_stocks = []
+        # utils_logger.error(f'Произошла ошибка: {e}', exc_info=True)
+
+    # if not fin_transactions:
+    #     utils_logger.warning('Список транзакций пуст')
+    return list_of_stocks
+
+
 def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict]:
     """
     Принимает список всех операций - возвращает только те, у которых статус = state
@@ -168,7 +187,9 @@ def get_card_cashback_rub(operations_list: list[dict]) -> float:
 if __name__ == '__main__':
     print(get_greeting())
     curr_list = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+    st_list = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
     print(curr_list)
+    print(st_list)
 
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     # operations = filter_by_state(operations, 'FAILED')
