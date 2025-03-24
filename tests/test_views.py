@@ -1,14 +1,11 @@
 import pytest
 
-from src.views import get_cards_information
+from src.views import get_cards_information, get_top_five_transactions
 
 
-def test_get_cards_information(test_operation_list):
-    #  для теста оставляем только рублёвые транзакции
-    test_list = test_operation_list[:5:2]
-    test_list.extend(test_operation_list[5:8:2])
-    test_list.extend(test_operation_list[8:14])
-    assert get_cards_information(test_list) == [
+def test_get_cards_information(test_rub_operation_list):
+    #  для теста используем только рублёвые транзакции
+    assert get_cards_information(test_rub_operation_list) == [
         {
             'last_digits': '7197',
             'total_spent': -283.0,
@@ -19,3 +16,39 @@ def test_get_cards_information(test_operation_list):
             'total_spent': 14750.0,
             'cashback': 99.0}
     ]
+
+
+def test_get_top_five_transactions(test_rub_operation_list):
+    assert (get_top_five_transactions(test_rub_operation_list) ==
+            [
+                {
+                    'date': '22.07.2021',
+                    'amount': -96099.94,
+                    'category': 'Переводы',
+                    'description': 'Перевод Кредитная карта. ТП 10.2 RUR'
+                },
+                {
+                    'date': '22.07.2021',
+                    'amount': -90000.0,
+                    'category': 'Переводы',
+                    'description': 'Перевод с карты'
+                },
+                {
+                    'date': '22.07.2021',
+                    'amount': -90000.0,
+                    'category': 'Переводы',
+                    'description': 'Перевод с карты'
+                },
+                {
+                    'date': '26.07.2021',
+                    'amount': -250.0,
+                    'category': 'Связь',
+                    'description': 'МТС'
+                },
+                {
+                    'date': '23.07.2021',
+                    'amount': -200.0,
+                    'category': 'Фастфуд',
+                    'description': 'Pyshechnaya Pyshlandiya'
+                }
+            ])

@@ -119,3 +119,11 @@ def test_operation_list() -> list[dict]:
             'Описание': 'IP Alekseev', 'Бонусы (включая кэшбэк)': 10, 'Округление на инвесткопилку': 0,
             'Сумма операции с округлением': 500.0}
         ]
+
+
+@pytest.fixture()
+def test_rub_operation_list(test_operation_list) -> list[dict]:
+    test_list = test_operation_list[:5:2]
+    test_list.extend(test_operation_list[5:8:2])
+    test_list.extend(test_operation_list[8:14])
+    return test_list
