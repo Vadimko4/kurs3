@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 import pytest
 import datetime
@@ -6,7 +6,7 @@ import numpy as np
 
 from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
                        get_date_obj_from_str_date, filter_by_date, filter_by_card, get_card_total_rub_spent,
-                       get_card_cashback_rub)
+                       get_card_cashback_rub, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json)
 
 
 @patch("src.utils.datetime.datetime")
@@ -25,7 +25,19 @@ def test_get_greeting(mock_datetime):
 def test_get_operations_from_xlsx(mock_get):
     mock_get.return_value.to_dict.return_value = []
     assert get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE) == []
-    mock_get.assert_called_with(PATH_TO_OPERATIONS_XLSX_FILE)
+    mock_get@patch('pandas.read_excel')
+
+
+@patch('builtins.open', new_callable=mock_open, read_data='[]')
+@patch('json.load')
+def test_get_currency_list_from_json(mock_json_load, mock_open):
+    mock_json_load.return_value = []
+
+    result = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+
+    assert result == []
+    mock_open.assert_called_once_with(PATH_TO_USER_SETTINGS_JSON_FILE, encoding='utf-8')
+    mock_json_load.assert_called_once()
 
 
 def test_filter_by_state(test_operation_list):
