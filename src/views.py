@@ -1,7 +1,8 @@
 import pandas as pd
+import json
 
 from utils import (PATH_TO_OPERATIONS_XLSX_FILE, get_operations_from_xlsx, filter_by_state, filter_by_date,
-                   filter_by_card, get_card_total_rub_spent, get_card_cashback_rub,
+                   filter_by_card, get_card_total_rub_spent, get_card_cashback_rub, get_greeting,
                    PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json, get_stock_list_from_json)
 from external_api import get_rub_transaction_amount, get_currency_too_rub_rate, get_stock_rub_price
 
@@ -76,9 +77,61 @@ def get_stock_prices(stock_list) -> list[dict]:
     stock_prices = [{"stock": stock, "price": get_stock_rub_price(stock)} for stock in stock_list]
     return stock_prices
 
+def foolproof_user_date_input() -> str:
+    """
+    Функция опрашивает пользователя с клавиатуры и возвращает целевую дату для анализа банковских транзакций
+    в виде: dd.mm.yyyy
+    """
+    while True:
+        user_answer = input('\nПользователь: ')
+        dd = user_answer[:2]
+        mm = user_answer[3:5]
+        yyyy = user_answer[-4:]
+        if (len(user_answer) != 10 or any(not i.isdigit() for i in (dd, mm, yyyy)) or int(dd) not in range(32)
+                or int(mm) not in range(1, 13) or user_answer.count('.') != 2):
+            print("\nПрограмма: Неверный ввод, должна быть строка вида dd.mm.yyyy \nПопробуйте ещё раз")
+        else:
+            break
+    return user_answer
 
-if __name__ == '__main__':
-    request_date = input("Введите интересующую Вас дату: ")
+
+def get_views_json():
+    """
+    Основная функция модуля. Запрашивает у пользователя интересующую дату.
+    По результатам анализа списка транзакций из xlsx файла озвращает json в который запакован словарь.
+    В словаре следующие ключи:
+
+    "greeting" - приветствие, адекватно времени обращения к функции
+
+    "cards" - информация по картам, список словарей вида:
+    "last_digits": "5814",
+      "total_spent": 1262.00,
+      "cashback": 12.62
+
+    "top_transactions" - 5 самых больших расходов за период в виде:
+    "date": "20.12.2021",
+    "amount": 829.00,
+    "category": "Супермаркеты",
+    "description": "Лента"
+
+    "currency_rates" - курсы валют (берутся из user_settings.json файла) к рублю список словарей вида:
+    "currency": "USD",
+    "rate": 73.21
+
+    "stock_prices" - стоимость акций (берутся из user_settings.json файла) в рублях в виде:
+    "stock": "AAPL",
+    "price": 150.12
+    """
+    dict_to_json = dict()
+
+    dict_to_json["greeting"] = get_greeting()
+    print(f"Программа: {get_greeting()}")
+    print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
+    request_date = foolproof_user_date_input()
+    # print(request_date)
+    # input()
+
+    print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
     start_date_operation = f"01{request_date[2:]} 00:00:00"
     end_date_operation = f"{request_date} 23:59:59"
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
@@ -89,13 +142,42 @@ if __name__ == '__main__':
     # отфильтровываем операции с нужными датами
     operations = filter_by_date(operations, start_date_operation, end_date_operation)
 
-    print(get_cards_information(operations))
-    print(get_top_five_transactions(operations))
+    dict_to_json["cards"] = get_cards_information(operations)
+    dict_to_json["top_transactions"] = get_top_five_transactions(operations)
 
     # получаем список валют пользователя
     currencies = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
-    print(get_currency_rates(currencies))
+    dict_to_json["currency_rates"] = get_currency_rates(currencies)
 
     # получаем список акций пользователя
     stocks = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
-    print(get_stock_prices(stocks))
+    dict_to_json["stock_prices"] = get_stock_prices(stocks)
+
+    json_data = json.dumps(dict_to_json, ensure_ascii=False, indent=4)
+    return json_data
+
+
+if __name__ == '__main__':
+    print(get_views_json())
+
+    # req_date = input("Введите интересующую Вас дату: ")
+    # start_date = f"01{req_date[2:]} 00:00:00"
+    # end_date = f"{req_date} 23:59:59"
+    # transactions = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+    #
+    # # отфильтровываем только операции со статусом ОК
+    # transactions = filter_by_state(transactions)
+    #
+    # # отфильтровываем операции с нужными датами
+    # transactions = filter_by_date(transactions, start_date, end_date)
+    #
+    # print(get_cards_information(transactions))
+    # print(get_top_five_transactions(transactions))
+    #
+    # # получаем список валют пользователя
+    # currs = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+    # print(get_currency_rates(currs))
+    #
+    # # получаем список акций пользователя
+    # st = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+    # print(get_stock_prices(st))

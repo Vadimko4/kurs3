@@ -56,7 +56,6 @@ def get_currency_too_rub_rate(currency: str) -> float:
         "to": "RUB"
     }
     response = requests.get(url, headers=headers, params=payload)
-    print(response.json())
 
     result_amount = response.json().get("info").get("rate")
     # status_code = response.status_code
