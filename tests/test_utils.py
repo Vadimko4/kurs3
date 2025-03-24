@@ -6,7 +6,8 @@ import numpy as np
 
 from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
                        get_date_obj_from_str_date, filter_by_date, filter_by_card, get_card_total_rub_spent,
-                       get_card_cashback_rub, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json)
+                       get_card_cashback_rub, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json,
+                       get_stock_list_from_json)
 
 
 @patch("src.utils.datetime.datetime")
@@ -34,6 +35,18 @@ def test_get_currency_list_from_json(mock_json_load, mock_open):
     mock_json_load.return_value = []
 
     result = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+
+    assert result == []
+    mock_open.assert_called_once_with(PATH_TO_USER_SETTINGS_JSON_FILE, encoding='utf-8')
+    mock_json_load.assert_called_once()
+
+
+@patch('builtins.open', new_callable=mock_open, read_data='[]')
+@patch('json.load')
+def test_get_stock_list_from_json(mock_json_load, mock_open):
+    mock_json_load.return_value = []
+
+    result = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
 
     assert result == []
     mock_open.assert_called_once_with(PATH_TO_USER_SETTINGS_JSON_FILE, encoding='utf-8')
