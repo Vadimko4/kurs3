@@ -155,7 +155,7 @@ def get_card_total_rub_spent(operations_list: list[dict]) -> float:
     """
     total_spent_sum = sum(get_rub_transaction_amount(i) for i in operations_list)
 
-    return total_spent_sum
+    return round(total_spent_sum, 2)
 
 
 def get_card_cashback_rub(operations_list: list[dict]) -> float:
