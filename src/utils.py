@@ -172,18 +172,6 @@ def get_card_cashback_rub(operations_list: list[dict]) -> float:
     return round(cashback_sum, 2)
 
 
-# def get_categories_count(operations_list: list[dict], categories_list: list[str]) -> dict:
-#     """
-#     Принимает список словарей с данными о банковских операциях и список интересующих нас ключей операций,
-#     dозвращает словарь, в котором ключи — названия интересующих нас ключей, значения — количество операций
-#     в каждой категории
-#     """
-#     # оставляем только те операции, у которых описание в "description" содержится в categories_list
-#     operations_list = [i.get("description") for i in operations_list if i.get("description") in categories_list]
-#
-#     return Counter(operations_list)
-
-
 if __name__ == '__main__':
     print(get_greeting())
     curr_list = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)

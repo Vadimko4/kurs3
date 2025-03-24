@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.external_api import get_rub_transaction_amount
+from src.external_api import get_rub_transaction_amount, get_currency_too_rub_rate
 
 
 @patch('requests.get')
@@ -18,3 +18,10 @@ def test_get_rub_transaction_amount(mock_get, test_operation_list):
 def test_get_rub_wrong_transaction_amount(wrong_transaction):
     with pytest.raises(ValueError):
         get_rub_transaction_amount(wrong_transaction)
+
+
+@patch('requests.get')
+def test_get_currency_too_rub_rate(mock_get):
+    mock_get.return_value.json.return_value = {'info': {"rate": 1000.00}}
+    assert get_currency_too_rub_rate('USD') == 1000.00
+    mock_get.assert_called_once()

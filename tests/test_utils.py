@@ -180,7 +180,6 @@ def test_filter_by_card(test_operation_list, card_number, expected):
     assert filter_by_card(test_operation_list, card_number) == expected
 
 
-
 def test_get_card_total_rub_spent(test_operation_list):
     assert get_card_total_rub_spent(test_operation_list[4: 6]) == 20300.00
     assert get_card_total_rub_spent(test_operation_list[0:1]) == -250.00
