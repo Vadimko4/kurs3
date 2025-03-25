@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 import json
 
-# from collections import Counter
 import datetime
+from src.logger import utils_logger
 from src.external_api import get_rub_transaction_amount
 
 PATH_TO_OPERATIONS_XLSX_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "operations.xlsx")
@@ -41,9 +41,11 @@ def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
     try:
         excel_data = pd.read_excel(xlsx_file_name)
         transactions_list = excel_data.to_dict(orient='records')
+        utils_logger.info('Успешное чтение списка операций из xlsx файла')
 
-    except Exception:
+    except Exception as e:
         transactions_list = []
+        utils_logger.error(f'При чтении списка операций из xlsx файла произошла ошибка: {e}', exc_info=True)
 
     return transactions_list
 
@@ -56,11 +58,11 @@ def get_currency_list_from_json(file_name: str = '') -> list[str]:
     try:
         with open(file_name, encoding='utf-8') as f:
             list_of_currency = json.load(f).get("user_currencies")
-        # utils_logger.info('Успешное чтение из файла')
+        utils_logger.info('Успешное чтение списка валют из json файла')
 
     except Exception as e:
         list_of_currency = []
-        # utils_logger.error(f'Произошла ошибка: {e}', exc_info=True)
+        utils_logger.error(f'При чтении списка валют из json файла произошла ошибка: {e}', exc_info=True)
 
     # if not fin_transactions:
     #     utils_logger.warning('Список транзакций пуст')
@@ -75,11 +77,11 @@ def get_stock_list_from_json(file_name: str = '') -> list[str]:
     try:
         with open(file_name, encoding='utf-8') as f:
             list_of_stocks = json.load(f).get("user_stocks")
-        # utils_logger.info('Успешное чтение из файла')
+        utils_logger.info('Успешное чтение списка акций из json файла')
 
     except Exception as e:
         list_of_stocks = []
-        # utils_logger.error(f'Произошла ошибка: {e}', exc_info=True)
+        utils_logger.error(f'При чтении списка акций из json файла произошла ошибка: {e}', exc_info=True)
 
     # if not fin_transactions:
     #     utils_logger.warning('Список транзакций пуст')
