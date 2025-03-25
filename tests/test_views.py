@@ -4,22 +4,20 @@ from unittest.mock import patch
 from src.views import get_cards_information, get_top_five_transactions
 
 
-@patch('src.external_api.requests.get')
-def test_get_cards_information(mock_function, test_rub_operation_list):
+def test_get_cards_information(test_rub_operation_list):
     #  для теста используем только рублёвые транзакции
-    mock_function.return_value = "1"
     assert get_cards_information(test_rub_operation_list) == [
+        {
+            'last_digits': '4556',
+            'total_spent': 14750.0,
+            'cashback': 99.0
+        },
         {
             'last_digits': '7197',
             'total_spent': -283.0,
             'cashback': 0
-        },
-        {
-            'last_digits': '4556',
-            'total_spent': 14750.0,
-            'cashback': 99.0}
+        }
     ]
-
 
 
 def test_get_top_five_transactions(test_rub_operation_list):

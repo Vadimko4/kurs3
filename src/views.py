@@ -18,6 +18,7 @@ def get_cards_information(operations_list: list[dict]) -> list[dict]:
     """
     # получаем номера карт, убиваем nan
     card_numbers_list = list(set(i.get("Номер карты") for i in operations_list if pd.notna(i.get("Номер карты"))))
+    card_numbers_list.sort()
 
     # Формируем общую информацию по всем картам
     cards_information_list = []
