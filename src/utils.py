@@ -176,9 +176,9 @@ def filter_by_category(operations_list: list[dict], category: str) -> list[dict]
     return operations_list
 
 
-def get_card_total_rub_spent(operations_list: list[dict]) -> float:
+def get_total_rub_spent(operations_list: list[dict]) -> float:
     """
-    Из списка операций возращает суммарные траты в рублях по всем картам, которые представлены в списке
+    Из списка операций возращает суммарные траты в рублях по всем операциям, которые представлены в списке
     """
     total_spent_sum = sum(get_rub_transaction_amount(i) for i in operations_list)
 

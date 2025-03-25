@@ -2,7 +2,8 @@ import json
 
 import numpy as np
 
-from src.utils import filter_by_date, filter_by_state
+from src.logger import services_logger
+from src.utils import filter_by_date, filter_by_state, filter_by_category, get_total_rub_spent
 
 
 def get_categories(operations_list: list[dict]) -> list[str]:
@@ -10,13 +11,15 @@ def get_categories(operations_list: list[dict]) -> list[str]:
     Функция - вспомогательная для get_profitable_cashback_categories, получает список транзакций
     Возвращает список всех категорий кэшбэка, которые есть во входном списке
     """
-    cashback_categories = list(set(transaction.get("Категория") for transaction in operations_list))
+    cashback_categories = list(set(transaction.get("Категория") for transaction in operations_list
+                                   if transaction.get("Категория") not in ('Пополнения', 'Переводы')))
     cashback_categories.sort()
+    services_logger.info('Категории трат для анализа получены')
 
     return cashback_categories
 
 
-def get_profitable_cashback_categories(year: int, month: int, operations_list: list[dict]):
+def get_profitable_cashback_categories(year: str, month: str, operations_list: list[dict]):
     """
     Сервис «Выгодные категории повышенного кешбэка» позволяет проанализировать, какие категории были наиболее выгодными
     для выбора в качестве категорий повышенного кешбэка.
@@ -29,7 +32,6 @@ def get_profitable_cashback_categories(year: int, month: int, operations_list: l
         "Категория 3": 500
     }
     """
-    dict_to_json = dict()
     start_date_operations = f"01.{month}.{year} 00:00:00"
     end_date_operations = f"31.{month}.{year} 23:59:59"
 
@@ -39,9 +41,33 @@ def get_profitable_cashback_categories(year: int, month: int, operations_list: l
     # отфильтровываем только операции со статусом ОК
     operations = filter_by_state(operations)
 
+    # Получаем список категорий, по которым были транзакции
     cashback_categories = get_categories(operations)
 
-    pass
+    # Формируем json ответ
+
+    # сначала будем записывать в список, чтобы отсортировать по возрастанию
+    cashback_categories_information_list = []
+    for category in cashback_categories:
+        one_category_operations_list = filter_by_category(operations, category)
+        # рассчитываем возможный размер кэшбэка, отталкиваясь от значения равного 1% от трат
+        cashback_categories_information_list.append(
+            [category,
+             abs(get_total_rub_spent(one_category_operations_list) // 100)
+             ])
+
+    # сортируем по возрастанию
+    cashback_categories_information_list.sort(key=lambda x: x[1], reverse=True)
+
+    # преобразуем список в словарь
+    cashback_categories_information_dict = dict(cashback_categories_information_list)
+
+    # преобразуем в json
+    json_data = json.dumps(cashback_categories_information_dict, ensure_ascii=False, indent=4)
+    services_logger.info('JSON ответ сервиса «Выгодные категории повышенного кешбэка» сформирован')
+
+    return json_data
+
 
 if __name__ == '__main__':
     ops = [
@@ -131,3 +157,4 @@ if __name__ == '__main__':
         ]
     cats = get_categories(ops)
     print(cats)
+    print(get_profitable_cashback_categories('2021', '07', ops))

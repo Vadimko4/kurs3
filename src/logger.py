@@ -17,3 +17,4 @@ logging.basicConfig(level=logging.DEBUG,
 utils_logger = logging.getLogger('utils')
 views_logger = logging.getLogger('views')
 external_api_logger = logging.getLogger('external_api')
+services_logger = logging.getLogger('services')

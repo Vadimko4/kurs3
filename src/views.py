@@ -4,7 +4,7 @@ import json
 
 from src.logger import views_logger
 from src.utils import (get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state, filter_by_date,
-                       filter_by_card, get_card_total_rub_spent, get_card_cashback_rub, get_greeting,
+                       filter_by_card, get_total_rub_spent, get_card_cashback_rub, get_greeting,
                        PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json, get_stock_list_from_json)
 from src.external_api import get_rub_transaction_amount, get_currency_too_rub_rate, get_stock_rub_price
 
@@ -29,7 +29,7 @@ def get_cards_information(operations_list: list[dict]) -> list[dict]:
         one_card_operations_list = filter_by_card(operations_list, card_number)
 
         card_information_dict["last_digits"] = card_number[1:]
-        card_information_dict["total_spent"] = get_card_total_rub_spent(one_card_operations_list)
+        card_information_dict["total_spent"] = get_total_rub_spent(one_card_operations_list)
         card_information_dict["cashback"] = get_card_cashback_rub(one_card_operations_list)
 
         cards_information_list.append(card_information_dict)

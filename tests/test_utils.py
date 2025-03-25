@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 
 from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
-                       get_date_obj_from_str_date, filter_by_date, filter_by_card, get_card_total_rub_spent,
+                       get_date_obj_from_str_date, filter_by_date, filter_by_card, get_total_rub_spent,
                        get_card_cashback_rub, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json,
                        get_stock_list_from_json, filter_by_category)
 
@@ -231,10 +231,10 @@ def test_filter_by_category(test_rub_operation_list, category, expected):
     assert filter_by_category(test_rub_operation_list, category) == expected
 
 
-def test_get_card_total_rub_spent(test_operation_list):
-    assert get_card_total_rub_spent(test_operation_list[4: 6]) == 20300.00
-    assert get_card_total_rub_spent(test_operation_list[0:1]) == -250.00
-    assert get_card_total_rub_spent([]) == 0.00
+def test_get_total_rub_spent(test_operation_list):
+    assert get_total_rub_spent(test_operation_list[4: 6]) == 20300.00
+    assert get_total_rub_spent(test_operation_list[0:1]) == -250.00
+    assert get_total_rub_spent([]) == 0.00
 
 
 def test_get_card_cashback_rub(test_operation_list):
