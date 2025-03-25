@@ -165,6 +165,17 @@ def filter_by_card(operations_list: list[dict], card_number: str) -> list[dict]:
     return operations_list
 
 
+def filter_by_category(operations_list: list[dict], category: str) -> list[dict]:
+    """
+    фильтрует список операций по указанной в параметре category категории
+    """
+    # убираем транзакции, в которых нет ключа "Категория"
+    operations_list = [i for i in operations_list if not i.get('Категория') is None]
+
+    operations_list = [i for i in operations_list if i.get('Категория') == category]
+    return operations_list
+
+
 def get_card_total_rub_spent(operations_list: list[dict]) -> float:
     """
     Из списка операций возращает суммарные траты в рублях по всем картам, которые представлены в списке

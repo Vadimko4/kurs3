@@ -12,6 +12,11 @@ def get_cashback_categories(operations_list: list[dict]) -> list[str]:
     cashback_categories.sort()
 
     return cashback_categories
+
+
+
+
+
 def get_profitable_cashback_categories(year: int, month: int, operations_list: list[dict]):
     """
     Сервис «Выгодные категории повышенного кешбэка» позволяет проанализировать, какие категории были наиболее выгодными
