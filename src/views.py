@@ -52,7 +52,14 @@ def get_top_five_transactions(operations_list: list[dict]) -> list[dict]:
     sorted_operations_list = sorted(operations_list, key=lambda x: get_rub_transaction_amount(x))
 
     top_five_list = []
-    for i in range(5):
+    if len(operations_list) > 4:
+        tops_count = 5
+    elif len(operations_list) > 0:
+        tops_count = len(operations_list)
+    else:  # если список транзакций пустой
+        return top_five_list
+
+    for i in range(tops_count):
         top_op_dict = dict()
         top_op_dict["date"] = sorted_operations_list[i].get('Дата операции')[:10]
         top_op_dict["amount"] = get_rub_transaction_amount(sorted_operations_list[i])
@@ -124,11 +131,11 @@ def get_views_json(request_date: str):
     end_date_operation = f"{request_date} 23:59:59"
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
 
-    # отфильтровываем только операции со статусом ОК
-    operations = filter_by_state(operations)
-
     # отфильтровываем операции с нужными датами
     operations = filter_by_date(operations, start_date_operation, end_date_operation)
+
+    # отфильтровываем только операции со статусом ОК
+    operations = filter_by_state(operations)
 
     dict_to_json["greeting"] = get_greeting()
     dict_to_json["cards"] = get_cards_information(operations)

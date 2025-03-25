@@ -56,6 +56,9 @@ def get_currency_too_rub_rate(currency: str) -> float:
         "to": "RUB"
     }
     response = requests.get(url, headers=headers, params=payload)
+    res = response.json()
+    if "exceeded" in res.get("message"):
+        raise ValueError('Количество обращений к API превышено! Вероятно, нужно обновить API-key')
 
     result_amount = response.json().get("info").get("rate")
     # status_code = response.status_code
@@ -80,13 +83,13 @@ def get_stock_rub_price(stock: str) -> float:
 
 
 if __name__ == '__main__':
-    print(get_rub_transaction_amount({
-                'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
-                'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': -135.0,
-                'Валюта операции': 'USD', 'Сумма платежа': -250.0,
-                'Валюта платежа': 'RUB', 'Кэшбэк': None, 'Категория': 'Связь',
-                'MCC': 4814.0, 'Описание': 'МТС', 'Бонусы (включая кэшбэк)': 0,
-                'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 250.0
-            }))
+    # print(get_rub_transaction_amount({
+    #             'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
+    #             'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': -135.0,
+    #             'Валюта операции': 'USD', 'Сумма платежа': -250.0,
+    #             'Валюта платежа': 'RUB', 'Кэшбэк': None, 'Категория': 'Связь',
+    #             'MCC': 4814.0, 'Описание': 'МТС', 'Бонусы (включая кэшбэк)': 0,
+    #             'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 250.0
+    #         }))
     print(get_currency_too_rub_rate('USD'))
-    print(get_stock_rub_price('TSLA'))
+    # print(get_stock_rub_price('TSLA'))
