@@ -5,6 +5,8 @@ import numpy as np
 from src.logger import services_logger
 from src.utils import filter_by_date, filter_by_state, filter_by_category, get_total_rub_spent
 
+EXCLUDE_CASHBACK_CATEGORIES = ('Пополнения', 'Переводы', 'Наличные', 'Бонусы', 'Зарплата')
+
 
 def get_categories(operations_list: list[dict]) -> list[str]:
     """
@@ -12,7 +14,7 @@ def get_categories(operations_list: list[dict]) -> list[str]:
     Возвращает список всех категорий кэшбэка, которые есть во входном списке
     """
     cashback_categories = list(set(transaction.get("Категория") for transaction in operations_list
-                                   if transaction.get("Категория") not in ('Пополнения', 'Переводы')))
+                                   if transaction.get("Категория") not in EXCLUDE_CASHBACK_CATEGORIES))
     cashback_categories.sort()
     services_logger.info('Категории трат для анализа получены')
 
@@ -33,7 +35,12 @@ def get_profitable_cashback_categories(year: str, month: str, operations_list: l
     }
     """
     start_date_operations = f"01.{month}.{year} 00:00:00"
-    end_date_operations = f"31.{month}.{year} 23:59:59"
+    last_day = '31'
+    if month in ('04', '06', '09', '11'):
+        last_day = '30'
+    elif month == '02':
+        last_day = '28'
+    end_date_operations = f"{last_day}.{month}.{year} 23:59:59"
 
     # отфильтровываем операции с нужными датами
     operations = filter_by_date(operations_list, start_date_operations, end_date_operations)
