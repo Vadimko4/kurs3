@@ -2,6 +2,7 @@ import os
 
 import requests
 from dotenv import load_dotenv
+from src.logger import external_api_logger
 
 # Загрузка переменных из .env-файла
 load_dotenv()
@@ -58,6 +59,7 @@ def get_currency_too_rub_rate(currency: str) -> float:
     response = requests.get(url, headers=headers, params=payload)
     res = response.json()
     if "exceeded" in res.get("message"):
+        external_api_logger.error(f'При обращении к API exchangerates_data возникла ошибка. Слишком много обращений')
         raise ValueError('Количество обращений к API превышено! Вероятно, нужно обновить API-key')
 
     result_amount = response.json().get("info").get("rate")
