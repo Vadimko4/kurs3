@@ -1,10 +1,13 @@
 import pytest
+from unittest.mock import patch
 
 from src.views import get_cards_information, get_top_five_transactions
 
 
-def test_get_cards_information(test_rub_operation_list):
+@patch('src.external_api.requests.get')
+def test_get_cards_information(mock_function, test_rub_operation_list):
     #  для теста используем только рублёвые транзакции
+    mock_function.return_value = "1"
     assert get_cards_information(test_rub_operation_list) == [
         {
             'last_digits': '7197',
@@ -18,7 +21,9 @@ def test_get_cards_information(test_rub_operation_list):
     ]
 
 
+
 def test_get_top_five_transactions(test_rub_operation_list):
+
     assert (get_top_five_transactions(test_rub_operation_list) ==
             [
                 {
