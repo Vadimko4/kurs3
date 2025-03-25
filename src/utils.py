@@ -47,6 +47,8 @@ def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
         transactions_list = []
         utils_logger.error(f'При чтении списка операций из xlsx файла произошла ошибка: {e}', exc_info=True)
 
+    if not transactions_list:
+        utils_logger.warning('Из xlsx файла считан пустой список')
     return transactions_list
 
 
@@ -64,8 +66,8 @@ def get_currency_list_from_json(file_name: str = '') -> list[str]:
         list_of_currency = []
         utils_logger.error(f'При чтении списка валют из json файла произошла ошибка: {e}', exc_info=True)
 
-    # if not fin_transactions:
-    #     utils_logger.warning('Список транзакций пуст')
+    if not list_of_currency:
+        utils_logger.warning('Список валют пользователя пуст')
     return list_of_currency
 
 
@@ -83,8 +85,8 @@ def get_stock_list_from_json(file_name: str = '') -> list[str]:
         list_of_stocks = []
         utils_logger.error(f'При чтении списка акций из json файла произошла ошибка: {e}', exc_info=True)
 
-    # if not fin_transactions:
-    #     utils_logger.warning('Список транзакций пуст')
+    if not list_of_stocks:
+        utils_logger.warning('Список акций пользователя пуст')
     return list_of_stocks
 
 
@@ -100,8 +102,13 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
         utils_logger.error(f'При сортировке транзакций по статусу поизошла ошибка: "Ошибочный статус операции!"')
         raise ValueError('Ошибочный статус операции!')
 
+    operations_list = [operation for operation in operations_list if operation.get('Статус') == state]
     utils_logger.info(f"Транзакции отсортированы по статусу {state}")
-    return [operation for operation in operations_list if operation.get('Статус') == state]
+
+    if not operations_list:
+        utils_logger.warning("Список транзакций пуст")
+
+    return operations_list
 
 
 def get_date_obj_from_str_date(str_date: str) -> datetime:
@@ -140,6 +147,10 @@ def filter_by_date(operations_list: list[dict], start_date_str: str, end_date_st
             result_list.append(operation)
 
     utils_logger.info('Транзакции отсортированы по дате')
+
+    if not result_list:
+        utils_logger.warning("Список транзакций пуст")
+
     return result_list
 
 

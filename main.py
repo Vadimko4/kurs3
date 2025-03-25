@@ -24,18 +24,9 @@ def foolproof_user_date_input() -> str:
 if __name__ == '__main__':
     print(f"Программа: {get_greeting()}")
     print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
-    request_date = foolproof_user_date_input()
+    req_date = foolproof_user_date_input()
 
     print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
-    start_date_operation = f"01{request_date[2:]} 00:00:00"
-    end_date_operation = f"{request_date} 23:59:59"
-    operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
-
-    # отфильтровываем только операции со статусом ОК
-    operations = filter_by_state(operations)
-
-    # отфильтровываем операции с нужными датами
-    operations = filter_by_date(operations, start_date_operation, end_date_operation)
-
     # формируем json ответ
-    print(get_views_json(operations))
+    json_answer = get_views_json(req_date)
+    print(json_answer)

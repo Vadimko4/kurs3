@@ -3,7 +3,8 @@ import numpy as np
 import json
 
 from src.logger import views_logger
-from src.utils import (filter_by_card, get_card_total_rub_spent, get_card_cashback_rub, get_greeting,
+from src.utils import (get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state, filter_by_date,
+                       filter_by_card, get_card_total_rub_spent, get_card_cashback_rub, get_greeting,
                        PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json, get_stock_list_from_json)
 from src.external_api import get_rub_transaction_amount, get_currency_too_rub_rate, get_stock_rub_price
 
@@ -87,9 +88,12 @@ def get_stock_prices(stock_list) -> list[dict]:
     return stock_prices
 
 
-def get_views_json(transactions: list[dict]):
+def get_views_json(request_date: str):
     """
-    Основная функция модуля. Анализирует список транзакций.
+    Основная функция модуля. Принимает на вход дату запроса.
+    Получает из xlsx файла список транзакций.
+    Отфильтровывает по статусу ОК, по дате от начала месяца до request_date + "23:59:59"
+    Анализирует итоговый список.
     По результатам анализа возвращает json в который запакован словарь.
     В словаре следующие ключи:
 
@@ -116,9 +120,19 @@ def get_views_json(transactions: list[dict]):
     """
     dict_to_json = dict()
 
+    start_date_operation = f"01{request_date[2:]} 00:00:00"
+    end_date_operation = f"{request_date} 23:59:59"
+    operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+
+    # отфильтровываем только операции со статусом ОК
+    operations = filter_by_state(operations)
+
+    # отфильтровываем операции с нужными датами
+    operations = filter_by_date(operations, start_date_operation, end_date_operation)
+
     dict_to_json["greeting"] = get_greeting()
-    dict_to_json["cards"] = get_cards_information(transactions)
-    dict_to_json["top_transactions"] = get_top_five_transactions(transactions)
+    dict_to_json["cards"] = get_cards_information(operations)
+    dict_to_json["top_transactions"] = get_top_five_transactions(operations)
 
     # получаем список валют пользователя
     currencies = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
