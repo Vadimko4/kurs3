@@ -15,4 +15,4 @@ logging.basicConfig(level=logging.DEBUG,
 
 # Создаем логеры для различных компонентов программы
 utils_logger = logging.getLogger('utils')
-masks_logger = logging.getLogger('external_api')
+views_logger = logging.getLogger('views')

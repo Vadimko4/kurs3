@@ -97,8 +97,10 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
     operations_list = [i for i in operations_list if not i.get('Статус') is None]
 
     if state not in ['OK', 'FAILED']:
+        utils_logger.error(f'При сортировке транзакций по статусу поизошла ошибка: "Ошибочный статус операции!"')
         raise ValueError('Ошибочный статус операции!')
 
+    utils_logger.info(f"Транзакции отсортированы по статусу {state}")
     return [operation for operation in operations_list if operation.get('Статус') == state]
 
 
@@ -137,6 +139,7 @@ def filter_by_date(operations_list: list[dict], start_date_str: str, end_date_st
         if start_data <= operation_date <= end_data:
             result_list.append(operation)
 
+    utils_logger.info('Транзакции отсортированы по дате')
     return result_list
 
 

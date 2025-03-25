@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 
+from src.logger import views_logger
 from src.utils import (filter_by_card, get_card_total_rub_spent, get_card_cashback_rub, get_greeting,
                        PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json, get_stock_list_from_json)
 from src.external_api import get_rub_transaction_amount, get_currency_too_rub_rate, get_stock_rub_price
@@ -31,6 +32,8 @@ def get_cards_information(operations_list: list[dict]) -> list[dict]:
         card_information_dict["cashback"] = get_card_cashback_rub(one_card_operations_list)
 
         cards_information_list.append(card_information_dict)
+
+    views_logger.info('Успешно сформированы данные по картам для страницы "Главная"')
     return cards_information_list
 
 
@@ -56,6 +59,7 @@ def get_top_five_transactions(operations_list: list[dict]) -> list[dict]:
         top_op_dict["description"] = sorted_operations_list[i].get('Описание')
         top_five_list.append(top_op_dict)
 
+    views_logger.info('Успешно сформированы данные о ТОП-5 операций для страницы "Главная"')
     return top_five_list
 
 
@@ -67,6 +71,7 @@ def get_currency_rates(currency_list: list[str]) -> list[dict]:
     "rate": 73.21
     """
     currency_rates = [{"currency": currency, "rate": get_currency_too_rub_rate(currency)} for currency in currency_list]
+    views_logger.info('Успешно сформированы курсы валют для страницы "Главная"')
     return currency_rates
 
 
@@ -78,6 +83,7 @@ def get_stock_prices(stock_list) -> list[dict]:
     "price": 150.12
     """
     stock_prices = [{"stock": stock, "price": get_stock_rub_price(stock)} for stock in stock_list]
+    views_logger.info('Успешно сформирована информация по акциям для страницы "Главная"')
     return stock_prices
 
 
@@ -123,6 +129,7 @@ def get_views_json(transactions: list[dict]):
     dict_to_json["stock_prices"] = get_stock_prices(stocks)
 
     json_data = json.dumps(dict_to_json, ensure_ascii=False, indent=4)
+    views_logger.info('JSON ответ для страницы "Главная" сформирован')
     return json_data
 
 
