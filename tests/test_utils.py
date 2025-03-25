@@ -7,7 +7,7 @@ import numpy as np
 from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
                        get_date_obj_from_str_date, filter_by_date, filter_by_card, get_card_total_rub_spent,
                        get_card_cashback_rub, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json,
-                       get_stock_list_from_json)
+                       get_stock_list_from_json, filter_by_category)
 
 
 @patch("src.utils.datetime.datetime")
@@ -190,6 +190,45 @@ def test_filter_by_date(test_operation_list, start_data, end_data, expected):
 ])
 def test_filter_by_card(test_operation_list, card_number, expected):
     assert filter_by_card(test_operation_list, card_number) == expected
+
+@pytest.mark.parametrize('category, expected', [
+    (
+            'Фастфуд',
+            [
+                {
+                    'Дата операции': '23.07.2021 16:05:51', 'Дата платежа': '23.07.2021',
+                    'Номер карты': '*7197', 'Статус': 'OK', 'Сумма операции': -40.0, 'Валюта операции': 'RUB',
+                    'Сумма платежа': -40.0, 'Валюта платежа': 'RUB', 'Кэшбэк': np.nan, 'Категория': 'Фастфуд',
+                    'MCC': 5814.0, 'Описание': 'Pyshechnaya Pyshlandiya', 'Бонусы (включая кэшбэк)': 0,
+                    'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 40.0
+                },
+                {
+                    'Дата операции': '23.07.2021 16:01:01', 'Дата платежа': '23.07.2021', 'Номер карты': '*7197',
+                    'Статус': 'OK', 'Сумма операции': -200.0, 'Валюта операции': 'RUB', 'Сумма платежа': -200.0,
+                    'Валюта платежа': 'RUB', 'Кэшбэк': np.nan, 'Категория': 'Фастфуд', 'MCC': 5814.0,
+                    'Описание': 'Pyshechnaya Pyshlandiya', 'Бонусы (включая кэшбэк)': 4,
+                    'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 200.0
+                }
+            ]
+    ),
+    (
+            'Транспорт',
+            [
+                {
+                    'Дата операции': '25.07.2021 20:55:58', 'Дата платежа': '26.07.2021', 'Номер карты': '*7197',
+                    'Статус': 'OK', 'Сумма операции': -43.0, 'Валюта операции': 'RUB', 'Сумма платежа': -43.0,
+                    'Валюта платежа': 'RUB', 'Кэшбэк': np.nan, 'Категория': 'Транспорт', 'MCC': 4111.0,
+                    'Описание': 'Северо-Западная пригородная пассажирская компания', 'Бонусы (включая кэшбэк)': 0,
+                    'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 43.0
+                }
+            ]
+    ),
+    (
+        'abracadabra',
+        []
+    )])
+def test_filter_by_category(test_rub_operation_list, category, expected):
+    assert filter_by_category(test_rub_operation_list, category) == expected
 
 
 def test_get_card_total_rub_spent(test_operation_list):
