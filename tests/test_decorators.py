@@ -1,22 +1,26 @@
+import os
 import pytest
+from unittest import mock
+import pandas as pd
 
-from src.decorators import log
-
-
-@log()
-def a_divs_b(a: int, b: int) -> float:
-    if not b:
-        raise ValueError("На ноль делить нельзя")
-
-    return a / b
+from src.decorators import write_df_to_xlsx_file, PATH_TO_REPORTS_XLSX_FILE
 
 
-def test_log(capsys):
-    a_divs_b(4, 2)
-    captured = capsys.readouterr()
-    assert captured.out == "a_divs_b ok\n"
+@write_df_to_xlsx_file()
+def my_foo() -> pd.DataFrame:
+    df = pd.DataFrame([{'Вася': 190, 'Саша': 183}, {'Ирина': 170, 'Лена': 163}])
+    return df
 
 
-def test_log_error():
-    with pytest.raises(Exception, match="На ноль делить нельзя"):
-        a_divs_b(2, 0)
+def test_write_df_to_xlsx_file():
+    with mock.patch('pandas.DataFrame.to_excel') as mock_to_excel:
+        # Вызов декорированной функции
+        my_foo()
+
+        # Проверка, что метод to_excel был вызван
+        mock_to_excel.assert_called_once()
+
+        # Проверка аргументов, с которыми был вызван метод
+        args, kwargs = mock_to_excel.call_args
+        assert kwargs['index'] == False  # Проверяем, что index=False
+        assert args[0] == os.path.join(PATH_TO_REPORTS_XLSX_FILE, 'report.xlsx')  # Проверяем имя файла

@@ -43,23 +43,23 @@ def foolproof_user_cashback_date_input() -> str:
 
 
 if __name__ == '__main__':
-    # print(f"Программа: {get_greeting()}")
-    # print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
-    # req_date = foolproof_user_date_input()
-    #
-    # print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
-    # # формируем json ответ
-    # json_views_answer = get_views_json(req_date)
-    # print(json_views_answer)
-    #
-    # print("\nПрограмма: перейдём к другим услугам.")
-    # print("Давайте посмотрим, какие категории для вас наиболее выгодны в плане повышенного кэшбэка.")
-    # print("Введите год и месяц для анализа (строка вида yyyy.mm)")
-    # req_date = foolproof_user_cashback_date_input()
-    # print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
-    # ops_list = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
-    # json_services_answer = get_profitable_cashback_categories(req_date[:4], req_date[-2:], ops_list)
-    # print(json_services_answer)
+    print(f"Программа: {get_greeting()}")
+    print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
+    req_date = foolproof_user_date_input()
+
+    print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
+    # формируем json ответ
+    json_views_answer = get_views_json(req_date)
+    print(json_views_answer)
+
+    print("\nПрограмма: перейдём к другим услугам.")
+    print("Давайте посмотрим, какие категории для вас наиболее выгодны в плане повышенного кэшбэка.")
+    print("Введите год и месяц для анализа (строка вида yyyy.mm)")
+    req_date = foolproof_user_cashback_date_input()
+    print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
+    ops_list = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+    json_services_answer = get_profitable_cashback_categories(req_date[:4], req_date[-2:], ops_list)
+    print(json_services_answer)
 
     print("\nПрограмма: Бог троицу любит)")
     print("Давайте посмотрим, сколько денег вы потратили по какой-нибудь конкретной категории за три месяца.")
@@ -79,3 +79,5 @@ if __name__ == '__main__':
     print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
     transactions_dataframe = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
     json_reports_answer = spending_by_category(transactions_dataframe, ctg, req_date)
+    print('\nПрограмма: Отчёт успешно сформирован и записан в xslsx файл в папку reports')
+    print('Всего доброго!')

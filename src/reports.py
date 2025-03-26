@@ -5,6 +5,7 @@ import numpy as np
 import datetime
 import pandas as pd
 from src.utils import filter_by_date, filter_by_state, filter_by_category
+from src.decorators import write_df_to_xlsx_file
 from src.logger import reports_logger
 
 
@@ -33,6 +34,7 @@ def get_date_three_month_earlier(target_date: str) -> str:
     return new_date
 
 
+@write_df_to_xlsx_file()
 def spending_by_category(transactions: pd.DataFrame,
                          category: str,
                          date: Optional[str] = None) -> pd.DataFrame:
@@ -58,8 +60,6 @@ def spending_by_category(transactions: pd.DataFrame,
 
     # Фильтруем операции по указанной категории
     operations_list = filter_by_category(operations_list, category)
-
-    print(operations_list)
 
     if not operations_list:
         print('\nПрограмма: за указанный период нет ни одной операции по такой категории')
