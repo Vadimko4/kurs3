@@ -296,3 +296,6 @@ if __name__ == '__main__':
         ]
     cats = filter_by_category(ops, 'Транспорт')
     print(len(cats), '\n', cats)
+
+    excel_data = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
+    print(type(excel_data))
