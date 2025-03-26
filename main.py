@@ -66,13 +66,16 @@ if __name__ == '__main__':
 
     print("\nЕсли хотите посмотреть статистику за последние три месяца от сегодняшней даты, то просто нажмите <ENTER>")
     print("или введите что угодно, если хотите ввести конкретную дату - наберите слово <дата>")
-    user_answ = input("Пользователь: ").lower()
+    user_answ = input("\nПользователь: ").lower()
 
     req_date = None
     if user_answ == 'дата':
         print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
         req_date = foolproof_user_date_input()
 
+    print("\nПрограмма: Какая категория расходов вас интересует?")
+    ctg = input("\nПользователь: ").title()
+
     print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
     transactions_dataframe = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
-    json_reports_answer = spending_by_category(transactions_dataframe, req_date)
+    json_reports_answer = spending_by_category(transactions_dataframe, ctg, req_date)
