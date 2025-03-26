@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 from src.logger import services_logger
-from src.utils import filter_by_date, filter_by_state, filter_by_category, get_total_rub_spent
+from src.utils import filter_by_category, filter_by_date, filter_by_state, get_total_rub_spent
 
 EXCLUDE_CASHBACK_CATEGORIES = ('Пополнения', 'Переводы', 'Наличные', 'Бонусы', 'Зарплата')
 

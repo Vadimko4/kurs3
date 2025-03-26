@@ -1,12 +1,12 @@
+import datetime
 from typing import Optional
 
 import numpy as np
-
-import datetime
 import pandas as pd
-from src.utils import filter_by_date, filter_by_state, filter_by_category
+
 from src.decorators import write_df_to_xlsx_file
 from src.logger import reports_logger
+from src.utils import filter_by_category, filter_by_date, filter_by_state
 
 
 def get_date_three_month_earlier(target_date: str) -> str:
@@ -69,12 +69,8 @@ def spending_by_category(transactions: pd.DataFrame,
     result_df = pd.DataFrame(operations_list)
 
     # преобразуем дата фрейм в json
-    json_data = result_df.to_json(orient='records')
-    reports_logger.info('JSON ответ сервиса «Выгодные категории повышенного кешбэка» сформирован')
-    '''
-    Дописать докстринги и декоратор, котрый запишет датафрейм в экселевский файл
-    дописать тесты
-    '''
+    # json_data = result_df.to_json(orient='records')
+    # reports_logger.info('JSON ответ сервиса «Выгодные категории повышенного кешбэка» сформирован')
 
     return result_df
 

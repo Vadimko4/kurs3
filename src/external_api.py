@@ -2,7 +2,8 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from src.logger import external_api_logger
+
+# from src.logger import external_api_logger
 
 # Загрузка переменных из .env-файла
 load_dotenv()
@@ -38,7 +39,6 @@ def get_rub_transaction_amount(transaction: dict) -> float:
 
         sign = (-1) ** int(transaction.get("Сумма операции") < 0)
         result_amount = response.json().get("result") * sign
-
 
     return round(result_amount, 2)
 
@@ -77,7 +77,8 @@ def get_stock_rub_price(stock: str) -> float:
     response = requests.get(url, params=querystring)
     # status_code = response.status_code
 
-    #  вытаскиваем из ответа json цену на момент открытия в ближайший прошедший торговый день и из USD конвертим в рубли
+    #  вытаскиваем из ответа json цену на момент открытия в ближайший прошедший торговый день
+    #  и из USD конвертим в рубли
     result_amount = get_rub_transaction_amount(
         {"Сумма операции": response.json().get('data')[0].get('open'),
          "Валюта операции": "USD"})

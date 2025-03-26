@@ -1,9 +1,9 @@
 import os
-import pytest
 from unittest import mock
+
 import pandas as pd
 
-from src.decorators import write_df_to_xlsx_file, PATH_TO_REPORTS_XLSX_FILE
+from src.decorators import PATH_TO_REPORTS_XLSX_FILE, write_df_to_xlsx_file
 
 
 @write_df_to_xlsx_file()
@@ -22,5 +22,5 @@ def test_write_df_to_xlsx_file():
 
         # Проверка аргументов, с которыми был вызван метод
         args, kwargs = mock_to_excel.call_args
-        assert kwargs['index'] == False  # Проверяем, что index=False
+        assert kwargs['index'] is False  # Проверяем, что index=False
         assert args[0] == os.path.join(PATH_TO_REPORTS_XLSX_FILE, 'report.xlsx')  # Проверяем имя файла

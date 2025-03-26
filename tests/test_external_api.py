@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.external_api import get_rub_transaction_amount, get_currency_too_rub_rate, get_stock_rub_price, stocks_api_key
+from src.external_api import get_currency_too_rub_rate, get_rub_transaction_amount, get_stock_rub_price, stocks_api_key
 
 
 @patch('requests.get')

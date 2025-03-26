@@ -1,12 +1,13 @@
-import pandas as pd
-import numpy as np
 import json
 
+import numpy as np
+import pandas as pd
+
+from src.external_api import get_currency_too_rub_rate, get_rub_transaction_amount, get_stock_rub_price
 from src.logger import views_logger
-from src.utils import (get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state, filter_by_date,
-                       filter_by_card, get_total_rub_spent, get_card_cashback_rub, get_greeting,
-                       PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json, get_stock_list_from_json)
-from src.external_api import get_rub_transaction_amount, get_currency_too_rub_rate, get_stock_rub_price
+from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, filter_by_card, filter_by_date,
+                       filter_by_state, get_card_cashback_rub, get_currency_list_from_json, get_greeting,
+                       get_operations_from_xlsx, get_stock_list_from_json, get_total_rub_spent)
 
 
 def get_cards_information(operations_list: list[dict]) -> list[dict]:
@@ -78,7 +79,8 @@ def get_currency_rates(currency_list: list[str]) -> list[dict]:
     "currency": "USD",
     "rate": 73.21
     """
-    currency_rates = [{"currency": currency, "rate": get_currency_too_rub_rate(currency)} for currency in currency_list]
+    currency_rates = [{"currency": currency, "rate": get_currency_too_rub_rate(currency)}
+                      for currency in currency_list]
     views_logger.info('Успешно сформированы курсы валют для страницы "Главная"')
     return currency_rates
 

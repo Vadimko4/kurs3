@@ -1,12 +1,12 @@
+import datetime
+import json
 import os
 
-import pandas as pd
 import numpy as np
-import json
+import pandas as pd
 
-import datetime
-from src.logger import utils_logger
 from src.external_api import get_rub_transaction_amount
+from src.logger import utils_logger
 
 PATH_TO_OPERATIONS_XLSX_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "operations.xlsx")
 PATH_TO_USER_SETTINGS_JSON_FILE = os.path.join(os.path.dirname(__file__)[:-4], "data", "user_settings.json")
@@ -99,7 +99,7 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
     operations_list = [i for i in operations_list if not i.get('Статус') is None]
 
     if state not in ['OK', 'FAILED']:
-        utils_logger.error(f'При сортировке транзакций по статусу поизошла ошибка: "Ошибочный статус операции!"')
+        utils_logger.error('При сортировке транзакций по статусу произошла ошибка: Ошибочный статус операции!')
         raise ValueError('Ошибочный статус операции!')
 
     operations_list = [operation for operation in operations_list if operation.get('Статус') == state]
@@ -113,7 +113,7 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
 
 def get_date_obj_from_str_date(str_date: str) -> datetime:
     """
-    переводит строковое отображение даты вида '26.07.2021 20:35:57' 
+    переводит строковое отображение даты вида '26.07.2021 20:35:57'
     в объект библиотеки datetime
     """
     if len(str_date) == 10:  # дата вида 26.07.2021 - временнАя часть отсутствует
@@ -127,8 +127,8 @@ def get_date_obj_from_str_date(str_date: str) -> datetime:
     second = int(str_date.split()[1].split(':')[2])
     result_date = datetime.datetime(year, month, day, hour, minute, second)
     return result_date
-    
-    
+
+
 def filter_by_date(operations_list: list[dict], start_date_str: str, end_date_str: str) -> list[dict]:
     """
     фильтрует список операций по дате: от start_data включительно, до end_data включительно

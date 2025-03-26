@@ -1,13 +1,13 @@
+import datetime
 from unittest.mock import mock_open, patch
 
-import pytest
-import datetime
 import numpy as np
+import pytest
 
-from src.utils import (get_greeting, get_operations_from_xlsx, PATH_TO_OPERATIONS_XLSX_FILE, filter_by_state,
-                       get_date_obj_from_str_date, filter_by_date, filter_by_card, get_total_rub_spent,
-                       get_card_cashback_rub, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json,
-                       get_stock_list_from_json, filter_by_category)
+from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, filter_by_card,
+                       filter_by_category, filter_by_date, filter_by_state, get_card_cashback_rub,
+                       get_currency_list_from_json, get_date_obj_from_str_date, get_greeting, get_operations_from_xlsx,
+                       get_stock_list_from_json, get_total_rub_spent)
 
 
 @patch("src.utils.datetime.datetime")
@@ -167,29 +167,30 @@ def test_filter_by_date(test_operation_list, start_data, end_data, expected):
     (
         '*4556',
         [
-        {
-            'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
-            'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': -250.0,
-            'Валюта операции': 'RUB', 'Сумма платежа': -250.0,
-            'Валюта платежа': 'RUB', 'Кэшбэк': 99.00, 'Категория': 'Связь',
-            'MCC': 4814.0, 'Описание': 'МТС', 'Бонусы (включая кэшбэк)': 0,
-            'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 250.0
-        },
-        {
-            'Дата операции': '23.07.2021 19:00:53', 'Дата платежа': '23.07.2021',
-            'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': 15000.0,
-            'Валюта операции': 'RUB', 'Сумма платежа': 15000.0, 'Валюта платежа': 'RUB',
-            'Кэшбэк': np.nan, 'Категория': 'Пополнения', 'MCC': np.nan,
-            'Описание': 'Внесение наличных через банкомат Тинькофф',
-            'Бонусы (включая кэшбэк)': 0, 'Округление на инвесткопилку': 0,
-            'Сумма операции с округлением': 15000.0
-        }
+            {
+                'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
+                'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': -250.0,
+                'Валюта операции': 'RUB', 'Сумма платежа': -250.0,
+                'Валюта платежа': 'RUB', 'Кэшбэк': 99.00, 'Категория': 'Связь',
+                'MCC': 4814.0, 'Описание': 'МТС', 'Бонусы (включая кэшбэк)': 0,
+                'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 250.0
+            },
+            {
+                'Дата операции': '23.07.2021 19:00:53', 'Дата платежа': '23.07.2021',
+                'Номер карты': '*4556', 'Статус': 'OK', 'Сумма операции': 15000.0,
+                'Валюта операции': 'RUB', 'Сумма платежа': 15000.0, 'Валюта платежа': 'RUB',
+                'Кэшбэк': np.nan, 'Категория': 'Пополнения', 'MCC': np.nan,
+                'Описание': 'Внесение наличных через банкомат Тинькофф',
+                'Бонусы (включая кэшбэк)': 0, 'Округление на инвесткопилку': 0,
+                'Сумма операции с округлением': 15000.0
+            }
         ]
     ),
     ('*9999', [])
 ])
 def test_filter_by_card(test_operation_list, card_number, expected):
     assert filter_by_card(test_operation_list, card_number) == expected
+
 
 @pytest.mark.parametrize('category, expected', [
     (

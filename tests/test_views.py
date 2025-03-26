@@ -1,6 +1,3 @@
-import pytest
-from unittest.mock import patch
-
 from src.views import get_cards_information, get_top_five_transactions
 
 

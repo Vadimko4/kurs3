@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 
 @pytest.fixture()
@@ -208,4 +208,3 @@ def test_rub_operation_list() -> list[dict]:
             'Бонусы (включая кэшбэк)': 0, 'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 90000.0
         }
         ]
-
