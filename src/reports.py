@@ -69,7 +69,7 @@ def spending_by_category(transactions: pd.DataFrame,
     result_df = pd.DataFrame(operations_list)
 
     # преобразуем дата фрейм в json
-    # json_data = result_df.to_json(orient='records')
+    json_data = result_df.to_json(orient='records')
     # reports_logger.info('JSON ответ сервиса «Выгодные категории повышенного кешбэка» сформирован')
 
     return result_df
