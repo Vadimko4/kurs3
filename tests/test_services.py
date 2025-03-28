@@ -11,5 +11,5 @@ def test_get_categories(test_rub_operation_list):
 
 
 def test_get_profitable_cashback_categories(test_rub_operation_list):
-    assert (json.loads(get_profitable_cashback_categories('2021', '07', test_rub_operation_list)) ==
+    assert (json.loads(get_profitable_cashback_categories(2021, 7, test_rub_operation_list)) ==
             {"Связь": 3.0, "Фастфуд": 3.0, "Транспорт": 1.0})

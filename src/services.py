@@ -35,11 +35,11 @@ def get_profitable_cashback_categories(year: int, month: int, operations_list: l
         "Категория 3": 500
     }
     """
-    start_date_obj = datetime.datetime(year, month, 1, 0, 0, 0)
+    start_date = datetime.datetime(year, month, 1, 0, 0, 0)
     next_month = month % 12 + 1
     next_year = year + month // 12
-    end_date_obj = datetime.datetime(next_year, next_month, 1, 0, 0, 0)
-    end_date_obj = end_date_obj - datetime.timedelta(seconds=1)
+    end_date = datetime.datetime(next_year, next_month, 1, 0, 0, 0)
+    end_date = end_date - datetime.timedelta(seconds=1)
 
     start_date_operations = f"01.{month}.{year} 00:00:00"
     last_day = '31'
@@ -50,7 +50,7 @@ def get_profitable_cashback_categories(year: int, month: int, operations_list: l
     end_date_operations = f"{last_day}.{month}.{year} 23:59:59"
 
     # отфильтровываем операции с нужными датами
-    operations = filter_by_date(operations_list, start_date_operations, end_date_operations)
+    operations = filter_by_date(operations_list, start_date, end_date)
 
     # отфильтровываем только операции со статусом ОК
     operations = filter_by_state(operations)
