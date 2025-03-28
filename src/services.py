@@ -1,6 +1,7 @@
 import json
 
 import numpy as np
+import datetime
 
 from src.logger import services_logger
 from src.utils import filter_by_category, filter_by_date, filter_by_state, get_total_rub_spent
@@ -21,7 +22,7 @@ def get_categories(operations_list: list[dict]) -> list[str]:
     return cashback_categories
 
 
-def get_profitable_cashback_categories(year: str, month: str, operations_list: list[dict]):
+def get_profitable_cashback_categories(year: int, month: int, operations_list: list[dict]):
     """
     Сервис «Выгодные категории повышенного кешбэка» позволяет проанализировать, какие категории были наиболее выгодными
     для выбора в качестве категорий повышенного кешбэка.
@@ -34,6 +35,12 @@ def get_profitable_cashback_categories(year: str, month: str, operations_list: l
         "Категория 3": 500
     }
     """
+    start_date_obj = datetime.datetime(year, month, 1, 0, 0, 0)
+    next_month = month % 12 + 1
+    next_year = year + month // 12
+    end_date_obj = datetime.datetime(next_year, next_month, 1, 0, 0, 0)
+    end_date_obj = end_date_obj - datetime.timedelta(seconds=1)
+
     start_date_operations = f"01.{month}.{year} 00:00:00"
     last_day = '31'
     if month in ('04', '06', '09', '11'):
@@ -165,3 +172,13 @@ if __name__ == '__main__':
     cats = get_categories(ops)
     print(cats)
     print(get_profitable_cashback_categories('2021', '07', ops))
+
+    # year = 2024
+    # month = 12
+    # start_date_obj = datetime.datetime(int(year), int(month), 1, 0, 0, 0)
+    # next_month = month % 12 + 1
+    # next_year = year + month // 12
+    # end_date_obj = datetime.datetime(next_year, next_month, 1, 0, 0, 0)
+    # end_date_obj = end_date_obj - datetime.timedelta(seconds=1)
+    # print(start_date_obj)
+    # print(end_date_obj)

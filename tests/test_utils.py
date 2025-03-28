@@ -6,7 +6,7 @@ import pytest
 
 from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, filter_by_card,
                        filter_by_category, filter_by_date, filter_by_state, get_card_cashback_rub,
-                       get_currency_list_from_json, get_date_obj_from_str_date, get_greeting, get_operations_from_xlsx,
+                       get_currency_list_from_json, get_greeting, get_operations_from_xlsx,
                        get_stock_list_from_json, get_total_rub_spent)
 
 
@@ -106,14 +106,14 @@ def test_filter_by_wrong_state(wrong_state, test_operation_list):
         filter_by_state(test_operation_list, wrong_state)
 
 
-def test_get_date_obj_from_str_date():
-    expected_date = datetime.datetime(2021, 7, 26, 20, 35, 57)
-    assert get_date_obj_from_str_date('26.07.2021 20:35:57') == expected_date
+# def test_get_date_obj_from_str_date():
+#     expected_date = datetime.datetime(2021, 7, 26, 20, 35, 57)
+#     assert get_date_obj_from_str_date('26.07.2021 20:35:57') == expected_date
 
 
-@pytest.mark.parametrize('start_data, end_data, expected', [
-    ('26.07.2021',
-     '27.07.2021',
+@pytest.mark.parametrize('start_data_str, end_data_str, expected', [
+    ('26.07.2021 00:00:00',
+     '27.07.2021 23:59:59',
      [
         {
             'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
@@ -155,11 +155,13 @@ def test_get_date_obj_from_str_date():
         }
      ]
      ),
-    ('25.07.2025',
-     '26.07.2025',
+    ('25.07.2025 00:00:00',
+     '26.07.2025 23:59:59',
      []
      )])
-def test_filter_by_date(test_operation_list, start_data, end_data, expected):
+def test_filter_by_date(test_operation_list, start_data_str, end_data_str, expected):
+    start_data = datetime.datetime.strptime(start_data_str, "%d.%m.%Y %H:%M:%S")
+    end_data = datetime.datetime.strptime(end_data_str, "%d.%m.%Y %H:%M:%S")
     assert filter_by_date(test_operation_list, start_data, end_data) == expected
 
 

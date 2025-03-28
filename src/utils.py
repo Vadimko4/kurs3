@@ -111,39 +111,40 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
     return operations_list
 
 
-def get_date_obj_from_str_date(str_date: str) -> datetime:
-    """
-    переводит строковое отображение даты вида '26.07.2021 20:35:57'
-    в объект библиотеки datetime
-    """
-    if len(str_date) == 10:  # дата вида 26.07.2021 - временнАя часть отсутствует
-        str_date = f"{str_date} 00:00:00"
+# def get_date_obj_from_str_date(str_date: str) -> datetime:
+#     """
+#     переводит строковое отображение даты вида '26.07.2021 20:35:57'
+#     в объект библиотеки datetime
+#     """
+#     if len(str_date) == 10:  # дата вида 26.07.2021 - временнАя часть отсутствует
+#         str_date = f"{str_date} 00:00:00"
+#
+#     year = int(str_date.split()[0].split('.')[2])
+#     month = int(str_date.split()[0].split('.')[1])
+#     day = int(str_date.split()[0].split('.')[0])
+#     hour = int(str_date.split()[1].split(':')[0])
+#     minute = int(str_date.split()[1].split(':')[1])
+#     second = int(str_date.split()[1].split(':')[2])
+#     result_date = datetime.datetime(year, month, day, hour, minute, second)
+#     return result_date
 
-    year = int(str_date.split()[0].split('.')[2])
-    month = int(str_date.split()[0].split('.')[1])
-    day = int(str_date.split()[0].split('.')[0])
-    hour = int(str_date.split()[1].split(':')[0])
-    minute = int(str_date.split()[1].split(':')[1])
-    second = int(str_date.split()[1].split(':')[2])
-    result_date = datetime.datetime(year, month, day, hour, minute, second)
-    return result_date
 
-
-def filter_by_date(operations_list: list[dict], start_date_str: str, end_date_str: str) -> list[dict]:
+def filter_by_date(operations_list: list[dict], start_date: datetime, end_date: datetime) -> list[dict]:
     """
     фильтрует список операций по дате: от start_data включительно, до end_data включительно
     """
     # убираем транзакции, в которых нет ключа "Дата операции"
     operations_list = [i for i in operations_list if not i.get('Дата операции') is None]
 
-    start_data = get_date_obj_from_str_date(start_date_str)
-    end_data = get_date_obj_from_str_date(end_date_str)
+    # start_data = get_date_obj_from_str_date(start_date_str)
+    # end_data = get_date_obj_from_str_date(end_date_str)
 
     result_list = []
     for operation in operations_list:
         str_date = operation.get('Дата операции')
-        operation_date = get_date_obj_from_str_date(str_date)
-        if start_data <= operation_date <= end_data:
+        # operation_date = get_date_obj_from_str_date(str_date)
+        operation_date = datetime.datetime.strptime(str_date, "%d.%m.%Y %H:%M:%S")
+        if start_date <= operation_date <= end_date:
             result_list.append(operation)
 
     utils_logger.info('Транзакции отсортированы по дате')
@@ -200,15 +201,15 @@ def get_card_cashback_rub(operations_list: list[dict]) -> float:
 
 
 if __name__ == '__main__':
-    print(get_greeting())
-    curr_list = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
-    st_list = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
-    print(curr_list)
-    print(st_list)
+    # print(get_greeting())
+    # curr_list = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+    # st_list = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
+    # print(curr_list)
+    # print(st_list)
 
-    operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+    # operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     # operations = filter_by_state(operations, 'FAILED')
-    print(get_card_cashback_rub(operations[874: 894]))  # [874: 894], кэшбэк есть с 831
+    # print(get_card_cashback_rub(operations[874: 894]))  # [874: 894], кэшбэк есть с 831
     ops = [
         {
             'Дата операции': '26.07.2021 20:35:57', 'Дата платежа': '26.07.2021',
@@ -294,8 +295,11 @@ if __name__ == '__main__':
             'Бонусы (включая кэшбэк)': 0, 'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 90000.0
         }
         ]
-    cats = filter_by_category(ops, 'Транспорт')
-    print(len(cats), '\n', cats)
-
-    excel_data = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
-    print(type(excel_data))
+    date1 = datetime.datetime(2022, 7, 26, 0, 0,  0 )
+    date2 = datetime.datetime(2022, 7, 27, 0, 0,  0 )
+    print(filter_by_date(ops, date1, date2))
+    # cats = filter_by_category(ops, 'Транспорт')
+    # print(len(cats), '\n', cats)
+    #
+    # excel_data = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
+    # print(type(excel_data))
