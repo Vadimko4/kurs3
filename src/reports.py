@@ -9,29 +9,29 @@ from src.logger import reports_logger
 from src.utils import filter_by_category, filter_by_date, filter_by_state
 
 
-def get_date_three_month_earlier(target_date: str) -> str:
-    """
-    Функция от входящей даты target_data в виде 11.04.1976
-    отсчитывает назад 3 месяца и генерирует выходное новое значение даты тоже в виде дд.мм.гггг
-    """
-    months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-    day = target_date[:2]
-    month = target_date[3:5]
-    year = target_date[-4:]
-
-    new_month = months[int(month) - 4]
-    if int(month) < 4:
-        new_year = str(int(year) - 1)
-    else:
-        new_year = year
-
-    new_day = day
-    if int(new_day) > 28 and new_month == '02':
-        new_day = '28'
-    elif int(new_day) == 31 and new_month in ('04', '06', '09', '11'):
-        new_day = '30'
-    new_date = f'{new_day}.{new_month}.{new_year}'
-    return new_date
+# def get_date_three_month_earlier(target_date: str) -> str:
+#     """
+#     Функция от входящей даты target_data в виде 11.04.1976
+#     отсчитывает назад 3 месяца и генерирует выходное новое значение даты тоже в виде дд.мм.гггг
+#     """
+#     months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+#     day = target_date[:2]
+#     month = target_date[3:5]
+#     year = target_date[-4:]
+#
+#     new_month = months[int(month) - 4]
+#     if int(month) < 4:
+#         new_year = str(int(year) - 1)
+#     else:
+#         new_year = year
+#
+#     new_day = day
+#     if int(new_day) > 28 and new_month == '02':
+#         new_day = '28'
+#     elif int(new_day) == 31 and new_month in ('04', '06', '09', '11'):
+#         new_day = '30'
+#     new_date = f'{new_day}.{new_month}.{new_year}'
+#     return new_date
 
 
 @write_df_to_xlsx_file()
@@ -46,14 +46,16 @@ def spending_by_category(transactions: pd.DataFrame,
     """
 
     if date is None:
-        date_obj = datetime.datetime.now()
-        date = date_obj.strftime("%d.%m.%Y")
-
-    start_date_operations = f"{get_date_three_month_earlier(date)} 00:00:00"
-    end_date_operations = f"{date} 23:59:59"
+        request_date = datetime.datetime.now()
+    else:
+        request_date = datetime.datetime.strptime(f"{date} 23:59:59", "%d.%m.%Y %H:%M:%S")
+    offset = pd.DateOffset(months=-3)
+    start_date = request_date + offset
+    print(start_date)
+    input()
 
     # Фильтруем операции по дате
-    operations_list = filter_by_date(operations_list, start_date_operations, end_date_operations)
+    # operations_list = filter_by_date(operations_list, start_date_operations, end_date_operations)
 
     # Фильтруем операции по статусу ОК
     operations_list = filter_by_state(operations_list)
@@ -162,4 +164,4 @@ if __name__ == '__main__':
         }
     ]
     df = pd.DataFrame(ops)
-    spending_by_category(df, 'Фастфуд', '22.08.2021')
+    spending_by_category(df, 'Фастфуд', '31.05.2024')

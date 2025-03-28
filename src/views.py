@@ -2,6 +2,7 @@ import json
 
 import numpy as np
 import pandas as pd
+import datetime
 
 from src.external_api import get_currency_too_rub_rate, get_rub_transaction_amount, get_stock_rub_price
 from src.logger import views_logger
@@ -97,11 +98,11 @@ def get_stock_prices(stock_list) -> list[dict]:
     return stock_prices
 
 
-def get_views_json(request_date: str):
+def get_views_json(request_date: datetime):
     """
     Основная функция модуля. Принимает на вход дату запроса.
     Получает из xlsx файла список транзакций.
-    Отфильтровывает по статусу ОК, по дате от начала месяца до request_date + "23:59:59"
+    Отфильтровывает по статусу ОК, по дате от начала месяца до request_date
     Анализирует итоговый список.
     По результатам анализа возвращает json в который запакован словарь.
     В словаре следующие ключи:
@@ -128,13 +129,13 @@ def get_views_json(request_date: str):
     "price": 150.12
     """
     dict_to_json = dict()
-
-    start_date_operation = f"01{request_date[2:]} 00:00:00"
-    end_date_operation = f"{request_date} 23:59:59"
+    year = request_date.year
+    month = request_date.month
+    start_date = datetime.datetime(year, month, 1, 0, 0, 0)
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
 
     # отфильтровываем операции с нужными датами
-    operations = filter_by_date(operations, start_date_operation, end_date_operation)
+    operations = filter_by_date(operations, start_date, request_date)
 
     # отфильтровываем только операции со статусом ОК
     operations = filter_by_state(operations)

@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 
 from src.views import get_views_json
 from src.services import get_profitable_cashback_categories
@@ -43,22 +44,27 @@ def foolproof_user_cashback_date_input() -> str:
 
 
 if __name__ == '__main__':
-    print(f"Программа: {get_greeting()}")
-    print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
-    req_date = foolproof_user_date_input()
-
-    print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
-    # формируем json ответ
-    json_views_answer = get_views_json(req_date)
-    print(json_views_answer)
+    # print(f"Программа: {get_greeting()}")
+    # print("\nВведите интересующую Вас дату (строка вида dd.mm.yyyy)")
+    # req_date_str = foolproof_user_date_input()
+    # req_date_str += " 23:59:59"
+    # req_date = datetime.datetime.strptime(req_date_str, "%d.%m.%Y %H:%M:%S")
+    #
+    # print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
+    # # формируем json ответ
+    # json_views_answer = get_views_json(req_date)
+    # print(json_views_answer)
 
     print("\nПрограмма: перейдём к другим услугам.")
     print("Давайте посмотрим, какие категории для вас наиболее выгодны в плане повышенного кэшбэка.")
     print("Введите год и месяц для анализа (строка вида yyyy.mm)")
-    req_date = foolproof_user_cashback_date_input()
+    req_date_str = foolproof_user_cashback_date_input()
     print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
     ops_list = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
-    json_services_answer = get_profitable_cashback_categories(req_date[:4], req_date[-2:], ops_list)
+
+    yyyy = int(req_date_str[:4])
+    mm = int(req_date_str[-2:])
+    json_services_answer = get_profitable_cashback_categories(yyyy, mm, ops_list)
     print(json_services_answer)
 
     print("\nПрограмма: Бог троицу любит)")

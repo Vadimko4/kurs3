@@ -41,14 +41,6 @@ def get_profitable_cashback_categories(year: int, month: int, operations_list: l
     end_date = datetime.datetime(next_year, next_month, 1, 0, 0, 0)
     end_date = end_date - datetime.timedelta(seconds=1)
 
-    start_date_operations = f"01.{month}.{year} 00:00:00"
-    last_day = '31'
-    if month in ('04', '06', '09', '11'):
-        last_day = '30'
-    elif month == '02':
-        last_day = '28'
-    end_date_operations = f"{last_day}.{month}.{year} 23:59:59"
-
     # отфильтровываем операции с нужными датами
     operations = filter_by_date(operations_list, start_date, end_date)
 
