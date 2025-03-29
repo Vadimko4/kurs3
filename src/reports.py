@@ -38,24 +38,21 @@ from src.utils import filter_by_category, filter_by_date, filter_by_state
 def spending_by_category(transactions: pd.DataFrame,
                          category: str,
                          date: Optional[str] = None) -> pd.DataFrame:
-    operations_list = transactions.to_dict(orient='records')
     """
     Функция возвращает из входного дата фрейм с банковскими транзакциями дата фрейм с банковскими транзакциями,
     которые кассаются данной категории в параметре category и за 3 предыдущих месяца до передаваемой в параметре
     date даты; если параметр не передан. то отсчёт производится от текущего момента
     """
-
+    operations_list = transactions.to_dict(orient='records')
     if date is None:
         request_date = datetime.datetime.now()
     else:
         request_date = datetime.datetime.strptime(f"{date} 23:59:59", "%d.%m.%Y %H:%M:%S")
     offset = pd.DateOffset(months=-3)
     start_date = request_date + offset
-    print(start_date)
-    input()
 
     # Фильтруем операции по дате
-    # operations_list = filter_by_date(operations_list, start_date_operations, end_date_operations)
+    operations_list = filter_by_date(operations_list, start_date, request_date)
 
     # Фильтруем операции по статусу ОК
     operations_list = filter_by_state(operations_list)
@@ -164,4 +161,6 @@ if __name__ == '__main__':
         }
     ]
     df = pd.DataFrame(ops)
-    spending_by_category(df, 'Фастфуд', '31.05.2024')
+    new_df = spending_by_category(df, 'Пополнения', '31.07.2025')
+    print(new_df.shape)
+    print(new_df.head())

@@ -83,7 +83,8 @@ if __name__ == '__main__':
     ctg = input("\nПользователь: ").title()
 
     print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
-    transactions_dataframe = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
+    # transactions_dataframe = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
+    transactions_dataframe = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
     json_reports_answer = spending_by_category(transactions_dataframe, ctg, req_date)
     print('\nПрограмма: Отчёт успешно сформирован и записан в xslsx файл в папку reports')
     print('Всего доброго!')

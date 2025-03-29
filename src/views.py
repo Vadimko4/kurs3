@@ -40,7 +40,7 @@ def get_cards_information(operations_list: list[dict]) -> list[dict]:
     return cards_information_list
 
 
-def get_top_five_transactions(operations_list: list[dict]) -> list[dict]:
+def get_top_five_transactions(operations: pd.DataFrame) -> list[dict]:
     """
     Принимает список словарей с данными о банковских операциях;
     возвращает список словарей, содержащих сводную информацию по топ-5 самых больших расходов
@@ -50,26 +50,39 @@ def get_top_five_transactions(operations_list: list[dict]) -> list[dict]:
     "category": "Супермаркеты",
     "description": "Лента"
     """
-    #  Сортируем транзакции по возрастанию "Сумма операции" в рублёвом эквиваленте
-    sorted_operations_list = sorted(operations_list, key=lambda x: get_rub_transaction_amount(x))
 
-    top_five_list = []
-    if len(operations_list) > 4:
-        tops_count = 5
-    elif len(operations_list) > 0:
-        tops_count = len(operations_list)
-    else:  # если список транзакций пустой
-        return top_five_list
+    # перезаписываем поле "Сумма операции" с точностью 2 знака после запятой
+    # если операция в иностранной валюте, то переводим в рубли
+    for i in range(operations.shape[0]):
+        if operations.loc[i, 'Валюта операции'] != "RUB":
+            operations.loc[i, 'Сумма операции'] = get_rub_transaction_amount(
+                operations.loc[i, 'Сумма операции'],
+                operations.loc[i, 'Валюта операции']
+            )
 
-    for i in range(tops_count):
-        top_op_dict = dict()
-        top_op_dict["date"] = sorted_operations_list[i].get('Дата операции')[:10]
-        top_op_dict["amount"] = get_rub_transaction_amount(sorted_operations_list[i])
-        top_op_dict["category"] = sorted_operations_list[i].get('Категория')
-        top_op_dict["description"] = sorted_operations_list[i].get('Описание')
-        top_five_list.append(top_op_dict)
+    # выбираем из всей таблицы только нужные нам столбцы
+    operations = operations.loc[:, ['Дата операции', 'Сумма операции', 'Категория', 'Описание']]
 
-    views_logger.info('Успешно сформированы данные о ТОП-5 операций для страницы "Главная"')
+    # сртируем по возрастанию данных в указанном столбце
+    operations = operations.sort_values(by='Сумма операции')
+
+    # оставляем только первые 5 строк
+    # условие поставлено так как если в датафрейме итак 5 строк, то программа падает с ошибкой из-за пандас
+    if operations.shape[0] != 5:
+        operations = operations.loc[:5]
+
+    # переименовываем столбцы по новому
+    operations.rename(columns={'Дата операции': 'date', 'Сумма операции': 'amount', 'Категория': 'category',
+                               'Описание': 'description'}, inplace=True)
+    # преобразуем датафрейм в список словарей
+    top_five_list = operations.to_dict(orient='records')
+    views_logger.info('Успешно сформированы данные ТОП-5 операций для страницы "Главная"')
+
+    if not top_five_list:
+        views_logger.warning('Список ТОП-5 операций пустой')
+    elif len(top_five_list) < 5:
+        views_logger.warning(f'Список ТОП-5 операций неполный: количество операций = {len(top_five_list)}')
+
     return top_five_list
 
 
@@ -243,7 +256,17 @@ if __name__ == '__main__':
             'Бонусы (включая кэшбэк)': 0, 'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 90000.0
         }
         ]
-    print(get_top_five_transactions(ops))
+    # ТОП 5 транзакций
+    # преобразуем список словарей в датафрейм
+    data = pd.DataFrame(ops)
+    # input()
+    if data.empty:
+        exit()
+
+    dd = get_top_five_transactions(data)
+    print(dd)
+
+    # print(get_top_five_transactions(ops))
     # print(get_views_json())
 
     # req_date = input("Введите интересующую Вас дату: ")

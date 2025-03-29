@@ -13,32 +13,26 @@ currency_api_key = os.getenv('CURRENCY_API_KEY')
 stocks_api_key = os.getenv('STOCKS_API_KEY')
 
 
-def get_rub_transaction_amount(transaction: dict) -> float:
+def get_rub_transaction_amount(amount: float, currency: str) -> float:
     """
-    Функция возвращает сумму транзакции в рублях, тип данных — float.
-    Если транзакция была в USD или EUR, происходит обращение к внешнему API
-    для получения текущего курса валют и конвертации суммы операции в рубли
+    Функция переводит сумму amount в валюте currency - в рубли по актуальному курсу, тип данных — float.
+    для получения текущего курса валют и конвертации происходит обращение к внешнему API
     """
-    if "Сумма операции" not in transaction or "Валюта операции" not in transaction:
-        raise ValueError('Неверные данные о транзакции')
 
-    if transaction["Валюта операции"] == "RUB":
-        result_amount = transaction["Сумма операции"]
-    else:
-        url = "https://api.apilayer.com/exchangerates_data/convert"
-        headers = {
-            "apikey": currency_api_key
-        }
-        payload = {
-            "amount": abs(transaction.get("Сумма операции")),
-            "from": transaction.get("Валюта операции"),
-            "to": "RUB"
-        }
-        response = requests.get(url, headers=headers, params=payload)
-        # status_code = response.status_code
+    url = "https://api.apilayer.com/exchangerates_data/convert"
+    headers = {
+        "apikey": currency_api_key
+    }
+    payload = {
+        "amount": abs(amount),
+        "from": currency,
+        "to": "RUB"
+    }
+    response = requests.get(url, headers=headers, params=payload)
+    # status_code = response.status_code
 
-        sign = (-1) ** int(transaction.get("Сумма операции") < 0)
-        result_amount = response.json().get("result") * sign
+    sign = (-1) ** (amount < 0)
+    result_amount = response.json().get("result") * sign
 
     return round(result_amount, 2)
 
@@ -79,9 +73,7 @@ def get_stock_rub_price(stock: str) -> float:
 
     #  вытаскиваем из ответа json цену на момент открытия в ближайший прошедший торговый день
     #  и из USD конвертим в рубли
-    result_amount = get_rub_transaction_amount(
-        {"Сумма операции": response.json().get('data')[0].get('open'),
-         "Валюта операции": "USD"})
+    result_amount = get_rub_transaction_amount(response.json().get('data')[0].get('open'), "USD")
 
     return round(result_amount, 2)
 

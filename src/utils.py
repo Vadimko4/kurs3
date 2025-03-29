@@ -34,22 +34,22 @@ def get_greeting() -> str:
     return greeting
 
 
-def get_operations_from_xlsx(xlsx_file_name: str) -> list[dict]:
+def get_operations_from_xlsx(xlsx_file_name: str) -> pd.DataFrame:
     """
     считывает список транзакций-операций (словари) из xlsx файла
     """
     try:
         excel_data = pd.read_excel(xlsx_file_name)
-        transactions_list = excel_data.to_dict(orient='records')
+        # transactions_list = excel_data.to_dict(orient='records')
         utils_logger.info('Успешное чтение списка операций из xlsx файла')
 
     except Exception as e:
-        transactions_list = []
+        excel_data = pd.DataFrame([])
         utils_logger.error(f'При чтении списка операций из xlsx файла произошла ошибка: {e}', exc_info=True)
 
-    if not transactions_list:
+    if excel_data.empty:
         utils_logger.warning('Из xlsx файла считан пустой список')
-    return transactions_list
+    return excel_data
 
 
 def get_currency_list_from_json(file_name: str = '') -> list[str]:
@@ -92,6 +92,7 @@ def get_stock_list_from_json(file_name: str = '') -> list[str]:
 
 def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict]:
     """
+    транзакции в формате список словарей (!)
     Принимает список всех операций - возвращает только те, у которых статус = state
     По умолчанию статус равен ОК
     """
@@ -131,6 +132,7 @@ def filter_by_state(operations_list: list[dict], state: str = 'OK') -> list[dict
 
 def filter_by_date(operations_list: list[dict], start_date: datetime, end_date: datetime) -> list[dict]:
     """
+    транзакции в формате список словарей (!)
     фильтрует список операций по дате: от start_data включительно, до end_data включительно
     """
     # убираем транзакции, в которых нет ключа "Дата операции"
@@ -168,6 +170,7 @@ def filter_by_card(operations_list: list[dict], card_number: str) -> list[dict]:
 
 def filter_by_category(operations_list: list[dict], category: str) -> list[dict]:
     """
+    транзакции в формате список словарей (!)
     фильтрует список операций по указанной в параметре category категории
     """
     # убираем транзакции, в которых нет ключа "Категория"
@@ -201,6 +204,9 @@ def get_card_cashback_rub(operations_list: list[dict]) -> float:
 
 
 if __name__ == '__main__':
+    # excel_data = pd.DataFrame([])
+    # print(excel_data.empty)
+    # input()
     # print(get_greeting())
     # curr_list = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
     # st_list = get_stock_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
