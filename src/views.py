@@ -6,33 +6,32 @@ import datetime
 
 from src.external_api import get_currency_too_rub_rate, get_rub_transaction_amount, get_stock_rub_price
 from src.logger import views_logger
-from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, filter_by_card, filter_by_date,
-                       filter_by_state, get_card_cashback_rub, get_currency_list_from_json, get_greeting,
-                       get_operations_from_xlsx, get_stock_list_from_json, get_total_rub_spent)
+from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, get_currency_list_from_json,
+                       get_greeting, get_operations_from_xlsx, get_stock_list_from_json, get_total_rub_spent)
 
 
-def get_cards_information(operations_list: list[dict]) -> list[dict]:
+def get_cards_information(operations: pd.DataFrame) -> list[dict]:
     """
-    Принимает список словарей с данными о банковских операциях;
+    Принимает датафрейм с данными о банковских операциях;
     возвращает список словарей, содержащих сводную информацию по картам, которые фигурируют
     во входном списке операций: последние 4 цифры номера карты, общая сумма расходов,
     сумма кешбэка
     Функция считает по всем транзакциям, не обращает внимание на статус и дату операции
     Предполагается, что по статусу и дате операции были отфильтрованы ранее
     """
-    # получаем номера карт, убиваем nan
-    card_numbers_list = list(set(i.get("Номер карты") for i in operations_list if pd.notna(i.get("Номер карты"))))
-    card_numbers_list.sort()
+    # отфильтровываем операции в которых "Номер карты" не пустой
+    operations_with_card = operations.loc[pd.notna(operations['Номер карты'])]
+    card_numbers_list = list(operations_with_card['Номер карты'].unique())
 
     # Формируем общую информацию по всем картам
     cards_information_list = []
     for card_number in card_numbers_list:
         card_information_dict = dict()
-        one_card_operations_list = filter_by_card(operations_list, card_number)
+        one_card_operations_df = operations.loc[operations['Номер карты'] == card_number]
 
         card_information_dict["last_digits"] = card_number[1:]
-        card_information_dict["total_spent"] = get_total_rub_spent(one_card_operations_list)
-        card_information_dict["cashback"] = get_card_cashback_rub(one_card_operations_list)
+        card_information_dict["total_spent"] = get_total_rub_spent(one_card_operations_df)
+        card_information_dict["cashback"] = round(one_card_operations_df['Кэшбэк'].sum(), 2)
 
         cards_information_list.append(card_information_dict)
 
@@ -110,7 +109,6 @@ def get_stock_prices(stock_list) -> list[dict]:
     "stock": "AAPL",
     "price": 150.12
     """
-    input('888')
     stock_prices = [{"stock": stock, "price": get_stock_rub_price(stock)} for stock in stock_list]
     views_logger.info('Успешно сформирована информация по акциям для страницы "Главная"')
     return stock_prices
@@ -156,16 +154,14 @@ def get_views_json(request_date: datetime) -> json:
     operations['Дата операции'] = pd.to_datetime(operations['Дата операции'], format="%d.%m.%Y %H:%M:%S")
 
     # отфильтровываем операции с нужными датами и статусом ОК
-    # operations = operations.loc[ |
     operations = operations.loc[(start_date <= operations['Дата операции']) &
                                 (operations['Дата операции'] <= request_date) &
                                 (operations['Статус'] == 'OK')]
-    print(operations.shape)
 
-    # меняем в датафрейму формат значения столбца 'Дата операции' с datetime обратно на str
+    # меняем в датафрейм формат значения столбца 'Дата операции' с datetime обратно на str
     operations['Дата операции'] = operations['Дата операции'].dt.strftime("%d.%m.%Y %H:%M:%S")
     dict_to_json["greeting"] = get_greeting()
-    # dict_to_json["cards"] = get_cards_information(operations)
+    dict_to_json["cards"] = get_cards_information(operations)
     dict_to_json["top_transactions"] = get_top_five_transactions(operations)
 
 
@@ -271,13 +267,12 @@ if __name__ == '__main__':
     # ТОП 5 транзакций
     # преобразуем список словарей в датафрейм
     data = pd.DataFrame(ops)
-    print(data.shape)
     data = data.loc[data['Статус'] == 'OK']
 
     # dd = get_top_five_transactions(data)
     # print(dd)
     #
-    dat_req = datetime.datetime(2021, 7, 27, 0, 0, 0)
+    dat_req = datetime.datetime(2021, 12, 27, 0, 0, 0)
     data_views = get_views_json(dat_req)
     print(data_views)
 

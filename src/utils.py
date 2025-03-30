@@ -180,25 +180,36 @@ def filter_by_category(operations_list: list[dict], category: str) -> list[dict]
     return operations_list
 
 
-def get_total_rub_spent(operations_list: list[dict]) -> float:
+def get_total_rub_spent(operations: pd.DataFrame) -> float:
     """
-    Из списка операций возращает суммарные траты в рублях по всем операциям, которые представлены в списке
+    Из датафрейма пандас с банковскими операцими возращает суммарные траты в рублях
+    по всем операциям, которые представлены в списке
     """
-    total_spent_sum = sum(get_rub_transaction_amount(i) for i in operations_list)
+
+    # перезаписываем поле "Сумма операции" с точностью 2 знака после запятой
+    # если операция в иностранной валюте, то переводим в рубли
+    for index, row in operations.iterrows():
+        if row['Валюта операции'] != "RUB":
+            row['Сумма операции'] = get_rub_transaction_amount(
+                row['Сумма операции'],
+                row['Валюта операции']
+            )
+
+    total_spent_sum = operations['Сумма операции'].sum()
 
     return round(total_spent_sum, 2)
 
 
-def get_card_cashback_rub(operations_list: list[dict]) -> float:
+def get_card_cashback_rub(operations: pd.DataFrame) -> float:
     """
     Из списка операций возращает суммарный кешбэк в рублях.
     Так как он представлен только в рублях - перевод из иностранной валюты не производится
     """
-    # убираем транзакции, в которых нет ключа "Кэшбэк" или он есть, но пустой (nan)
-    operations_list = [i for i in operations_list if (not i.get('Кэшбэк') is None) and
-                       (not np.isnan(i.get('Кэшбэк', np.nan)))]  # как обрабатывать nan
+    # # убираем, в которых нет ключа "Кэшбэк" или он есть, но пустой (nan)
+    # operations_list = [i for i in operations_list if (not i.get('Кэшбэк') is None) and
+    #                    (not np.isnan(i.get('Кэшбэк', np.nan)))]  # как обрабатывать nan
 
-    cashback_sum = sum(i.get('Кэшбэк') for i in operations_list)
+    cashback_sum = operations['Кэшбэк'].sum()
 
     return round(cashback_sum, 2)
 
