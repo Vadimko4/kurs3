@@ -50,21 +50,24 @@ def get_top_five_transactions(operations: pd.DataFrame) -> list[dict]:
     "category": "Супермаркеты",
     "description": "Лента"
     """
-
     # перезаписываем поле "Сумма операции" с точностью 2 знака после запятой
     # если операция в иностранной валюте, то переводим в рубли
-    for i in range(operations.shape[0]):
-        if operations.loc[i, 'Валюта операции'] != "RUB":
-            operations.loc[i, 'Сумма операции'] = get_rub_transaction_amount(
-                operations.loc[i, 'Сумма операции'],
-                operations.loc[i, 'Валюта операции']
+    for index, row in operations.iterrows():
+        if row['Валюта операции'] != "RUB":
+            row['Сумма операции'] = get_rub_transaction_amount(
+                row['Сумма операции'],
+                row['Валюта операции']
             )
 
     # выбираем из всей таблицы только нужные нам столбцы
+
     operations = operations.loc[:, ['Дата операции', 'Сумма операции', 'Категория', 'Описание']]
 
     # сртируем по возрастанию данных в указанном столбце
     operations = operations.sort_values(by='Сумма операции')
+
+    # сбрасываем индексы датафрейма, так как после фильтрации они стали идти не по порядку
+    operations.reset_index(drop=True, inplace=True)
 
     # оставляем только первые 5 строк
     # условие поставлено так как если в датафрейме итак 5 строк, то программа падает с ошибкой из-за пандас
@@ -107,6 +110,7 @@ def get_stock_prices(stock_list) -> list[dict]:
     "stock": "AAPL",
     "price": 150.12
     """
+    input('888')
     stock_prices = [{"stock": stock, "price": get_stock_rub_price(stock)} for stock in stock_list]
     views_logger.info('Успешно сформирована информация по акциям для страницы "Главная"')
     return stock_prices
@@ -147,8 +151,6 @@ def get_views_json(request_date: datetime) -> json:
     month = request_date.month
     start_date = datetime.datetime(year, month, 1, 0, 0, 0)
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
-    print(operations.columns, '\n', operations.shape, operations.loc[0, 'Статус'])
-    print(operations['Статус'].unique())
 
     # меняем в датафрейму формат значения столбца 'Дата операции' с str на datetime
     operations['Дата операции'] = pd.to_datetime(operations['Дата операции'], format="%d.%m.%Y %H:%M:%S")
@@ -164,7 +166,6 @@ def get_views_json(request_date: datetime) -> json:
     operations['Дата операции'] = operations['Дата операции'].dt.strftime("%d.%m.%Y %H:%M:%S")
     dict_to_json["greeting"] = get_greeting()
     # dict_to_json["cards"] = get_cards_information(operations)
-    input('123: ')
     dict_to_json["top_transactions"] = get_top_five_transactions(operations)
 
 
@@ -276,7 +277,7 @@ if __name__ == '__main__':
     # dd = get_top_five_transactions(data)
     # print(dd)
     #
-    dat_req = datetime.datetime(2021, 12, 20, 0, 0, 0)
+    dat_req = datetime.datetime(2021, 7, 27, 0, 0, 0)
     data_views = get_views_json(dat_req)
     print(data_views)
 
