@@ -18,7 +18,7 @@ def get_rub_transaction_amount(amount: float, currency: str) -> float:
     Функция переводит сумму amount в валюте currency - в рубли по актуальному курсу, тип данных — float.
     для получения текущего курса валют и конвертации происходит обращение к внешнему API
     """
-
+    return amount
     url = "https://api.apilayer.com/exchangerates_data/convert"
     headers = {
         "apikey": currency_api_key

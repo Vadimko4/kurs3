@@ -74,6 +74,7 @@ def get_top_five_transactions(operations: pd.DataFrame) -> list[dict]:
     # переименовываем столбцы по новому
     operations.rename(columns={'Дата операции': 'date', 'Сумма операции': 'amount', 'Категория': 'category',
                                'Описание': 'description'}, inplace=True)
+
     # преобразуем датафрейм в список словарей
     top_five_list = operations.to_dict(orient='records')
     views_logger.info('Успешно сформированы данные ТОП-5 операций для страницы "Главная"')
@@ -111,7 +112,7 @@ def get_stock_prices(stock_list) -> list[dict]:
     return stock_prices
 
 
-def get_views_json(request_date: datetime):
+def get_views_json(request_date: datetime) -> json:
     """
     Основная функция модуля. Принимает на вход дату запроса.
     Получает из xlsx файла список транзакций.
@@ -146,16 +147,26 @@ def get_views_json(request_date: datetime):
     month = request_date.month
     start_date = datetime.datetime(year, month, 1, 0, 0, 0)
     operations = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+    print(operations.columns, '\n', operations.shape, operations.loc[0, 'Статус'])
+    print(operations['Статус'].unique())
 
-    # отфильтровываем операции с нужными датами
-    operations = filter_by_date(operations, start_date, request_date)
+    # меняем в датафрейму формат значения столбца 'Дата операции' с str на datetime
+    operations['Дата операции'] = pd.to_datetime(operations['Дата операции'], format="%d.%m.%Y %H:%M:%S")
 
-    # отфильтровываем только операции со статусом ОК
-    operations = filter_by_state(operations)
+    # отфильтровываем операции с нужными датами и статусом ОК
+    # operations = operations.loc[ |
+    operations = operations.loc[(start_date <= operations['Дата операции']) &
+                                (operations['Дата операции'] <= request_date) &
+                                (operations['Статус'] == 'OK')]
+    print(operations.shape)
 
+    # меняем в датафрейму формат значения столбца 'Дата операции' с datetime обратно на str
+    operations['Дата операции'] = operations['Дата операции'].dt.strftime("%d.%m.%Y %H:%M:%S")
     dict_to_json["greeting"] = get_greeting()
-    dict_to_json["cards"] = get_cards_information(operations)
+    # dict_to_json["cards"] = get_cards_information(operations)
+    input('123: ')
     dict_to_json["top_transactions"] = get_top_five_transactions(operations)
+
 
     # получаем список валют пользователя
     currencies = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)
@@ -259,12 +270,15 @@ if __name__ == '__main__':
     # ТОП 5 транзакций
     # преобразуем список словарей в датафрейм
     data = pd.DataFrame(ops)
-    # input()
-    if data.empty:
-        exit()
+    print(data.shape)
+    data = data.loc[data['Статус'] == 'OK']
 
-    dd = get_top_five_transactions(data)
-    print(dd)
+    # dd = get_top_five_transactions(data)
+    # print(dd)
+    #
+    dat_req = datetime.datetime(2021, 12, 20, 0, 0, 0)
+    data_views = get_views_json(dat_req)
+    print(data_views)
 
     # print(get_top_five_transactions(ops))
     # print(get_views_json())
