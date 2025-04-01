@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import mock_open, patch
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, filter_by_card,
@@ -23,14 +24,18 @@ def test_get_greeting(mock_datetime):
 
 
 @patch('pandas.read_excel')
-def test_get_operations_from_xlsx(mock_get):
-    mock_get.return_value.to_dict.return_value = []
-    assert get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE) == []
+def test_get_operations_from_xlsx(mock_get, test_rub_operation_list):
+    operations_df = pd.DataFrame(test_rub_operation_list)
+    mock_get.return_value = operations_df
+    result_df = get_operations_from_xlsx(PATH_TO_OPERATIONS_XLSX_FILE)
+    pd.testing.assert_frame_equal(result_df, operations_df)
     mock_get@patch('pandas.read_excel')
 
 
 def test_get_operations_from_xlsx_with_error():
-    assert get_operations_from_xlsx('abracadabra') == []
+    operations_df = pd.DataFrame([])
+    result_df = get_operations_from_xlsx('abracadabra')
+    pd.testing.assert_frame_equal(result_df, operations_df)
 
 
 @patch('builtins.open', new_callable=mock_open, read_data='[]')
@@ -235,14 +240,14 @@ def test_filter_by_category(test_rub_operation_list, category, expected):
 
 
 def test_get_total_rub_spent(test_operation_list):
-    assert get_total_rub_spent(test_operation_list[4: 6]) == 20300.00
-    assert get_total_rub_spent(test_operation_list[0:1]) == -250.00
-    assert get_total_rub_spent([]) == 0.00
+    assert get_total_rub_spent(pd.DataFrame(test_operation_list[4: 6])) == 20300.00
+    assert get_total_rub_spent(pd.DataFrame(test_operation_list[0:1])) == -250.00
+    assert get_total_rub_spent(pd.DataFrame([])) == 0.00
 
 
 def test_get_card_cashback_rub(test_operation_list):
-    assert get_card_cashback_rub(test_operation_list[:2]) == 154.00
-    assert get_card_cashback_rub(test_operation_list) == 154.00
-    assert get_card_cashback_rub(test_operation_list[2:]) == 0.00
-    assert get_card_cashback_rub([]) == 0.00
-    assert get_card_cashback_rub([{}, {}]) == 0.00
+    assert get_card_cashback_rub(pd.DataFrame(test_operation_list[:2])) == 154.00
+    assert get_card_cashback_rub(pd.DataFrame(test_operation_list)) == 154.00
+    assert get_card_cashback_rub(pd.DataFrame(test_operation_list[2:])) == 0.00
+    assert get_card_cashback_rub(pd.DataFrame([])) == 0.00
+    assert get_card_cashback_rub(pd.DataFrame([{}, {}])) == 0.00

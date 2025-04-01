@@ -3,6 +3,8 @@ import json
 import numpy as np
 import datetime
 
+import pandas as pd
+
 from src.logger import services_logger
 from src.utils import filter_by_category, filter_by_date, filter_by_state, get_total_rub_spent
 
@@ -59,7 +61,7 @@ def get_profitable_cashback_categories(year: int, month: int, operations_list: l
         # рассчитываем возможный размер кэшбэка, отталкиваясь от значения равного 1% от трат
         cashback_categories_information_list.append(
             [category,
-             abs(get_total_rub_spent(one_category_operations_list) // 100)
+             abs(get_total_rub_spent(pd.DataFrame(one_category_operations_list)) // 100)
              ])
 
     # сортируем по возрастанию

@@ -185,6 +185,8 @@ def get_total_rub_spent(operations: pd.DataFrame) -> float:
     Из датафрейма пандас с банковскими операцими возращает суммарные траты в рублях
     по всем операциям, которые представлены в списке
     """
+    if operations.empty:
+        return 0.00
 
     # перезаписываем поле "Сумма операции" с точностью 2 знака после запятой
     # если операция в иностранной валюте, то переводим в рубли
@@ -208,7 +210,8 @@ def get_card_cashback_rub(operations: pd.DataFrame) -> float:
     # # убираем, в которых нет ключа "Кэшбэк" или он есть, но пустой (nan)
     # operations_list = [i for i in operations_list if (not i.get('Кэшбэк') is None) and
     #                    (not np.isnan(i.get('Кэшбэк', np.nan)))]  # как обрабатывать nan
-
+    if operations.empty:
+        return 0.00
     cashback_sum = operations['Кэшбэк'].sum()
 
     return round(cashback_sum, 2)
