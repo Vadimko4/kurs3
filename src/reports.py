@@ -6,32 +6,6 @@ import pandas as pd
 
 from src.decorators import write_df_to_xlsx_file
 from src.logger import reports_logger
-from src.utils import filter_by_category, filter_by_date, filter_by_state
-
-
-# def get_date_three_month_earlier(target_date: str) -> str:
-#     """
-#     Функция от входящей даты target_data в виде 11.04.1976
-#     отсчитывает назад 3 месяца и генерирует выходное новое значение даты тоже в виде дд.мм.гггг
-#     """
-#     months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-#     day = target_date[:2]
-#     month = target_date[3:5]
-#     year = target_date[-4:]
-#
-#     new_month = months[int(month) - 4]
-#     if int(month) < 4:
-#         new_year = str(int(year) - 1)
-#     else:
-#         new_year = year
-#
-#     new_day = day
-#     if int(new_day) > 28 and new_month == '02':
-#         new_day = '28'
-#     elif int(new_day) == 31 and new_month in ('04', '06', '09', '11'):
-#         new_day = '30'
-#     new_date = f'{new_day}.{new_month}.{new_year}'
-#     return new_date
 
 
 @write_df_to_xlsx_file()
@@ -40,10 +14,10 @@ def spending_by_category(transactions: pd.DataFrame,
                          date: Optional[str] = None) -> pd.DataFrame:
     """
     Функция возвращает из входного дата фрейм с банковскими транзакциями дата фрейм с банковскими транзакциями,
-    которые кассаются данной категории в параметре category и за 3 предыдущих месяца до передаваемой в параметре
-    date даты; если параметр не передан. то отсчёт производится от текущего момента
+    которые кассаются данной категории в параметре category за 3 предыдущих месяца до передаваемой в параметре
+    date даты; если параметр не передан, то отсчёт производится от текущего момента
     """
-    operations_list = transactions.to_dict(orient='records')
+    # operations_list = transactions.to_dict(orient='records')
     if date is None:
         request_date = datetime.datetime.now()
     else:
@@ -51,27 +25,27 @@ def spending_by_category(transactions: pd.DataFrame,
     offset = pd.DateOffset(months=-3)
     start_date = request_date + offset
 
-    # Фильтруем операции по дате
-    operations_list = filter_by_date(operations_list, start_date, request_date)
+    # меняем в датафрейм формат значения столбца 'Дата операции' с str на datetime
+    transactions['Дата операции'] = pd.to_datetime(transactions['Дата операции'], format="%d.%m.%Y %H:%M:%S")
 
-    # Фильтруем операции по статусу ОК
-    operations_list = filter_by_state(operations_list)
+    # отфильтровываем операции с нужными датами, статусом ОК и в нужной катеории
+    result_transactions = transactions.loc[(start_date <= transactions['Дата операции']) &
+                                           (transactions['Дата операции'] <= request_date) &
+                                           (transactions['Статус'] == 'OK') &
+                                           (transactions['Категория'] == category)].copy()
 
-    # Фильтруем операции по указанной категории
-    operations_list = filter_by_category(operations_list, category)
+    # меняем в датафрейм формат значения столбца 'Дата операции' с datetime обратно на str
+    result_transactions['Дата операции'] = result_transactions['Дата операции'].dt.strftime("%d.%m.%Y %H:%M:%S")
 
-    if not operations_list:
+    if result_transactions.empty:
         print('\nПрограмма: за указанный период нет ни одной операции по такой категории')
         reports_logger.warning('Нет операций с такой категорией в указанный период')
 
-    # преобразуем список словарей в дата фрейм
-    result_df = pd.DataFrame(operations_list)
-
     # преобразуем дата фрейм в json
-    json_data = result_df.to_json(orient='records')
+    # json_data = transactions.to_json(orient='records')
     # reports_logger.info('JSON ответ сервиса «Выгодные категории повышенного кешбэка» сформирован')
 
-    return result_df
+    return result_transactions
 
 
 if __name__ == '__main__':

@@ -267,8 +267,6 @@ if __name__ == '__main__':
     # ТОП 5 транзакций
     # преобразуем список словарей в датафрейм
     data = pd.DataFrame(ops)
-    print(get_top_five_transactions(data))
-    input('111')
     data = data.loc[data['Статус'] == 'OK']
 
     # dd = get_top_five_transactions(data)
