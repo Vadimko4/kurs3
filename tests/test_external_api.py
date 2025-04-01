@@ -1,7 +1,4 @@
 from unittest.mock import patch
-import pandas as pd
-
-import pytest
 
 from src.external_api import get_currency_too_rub_rate, get_rub_transaction_amount, get_stock_rub_price, stocks_api_key
 

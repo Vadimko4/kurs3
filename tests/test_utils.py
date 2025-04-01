@@ -7,8 +7,8 @@ import pytest
 
 from src.utils import (PATH_TO_OPERATIONS_XLSX_FILE, PATH_TO_USER_SETTINGS_JSON_FILE, filter_by_card,
                        filter_by_category, filter_by_date, filter_by_state, get_card_cashback_rub,
-                       get_currency_list_from_json, get_greeting, get_operations_from_xlsx,
-                       get_stock_list_from_json, get_total_rub_spent)
+                       get_currency_list_from_json, get_greeting, get_operations_from_xlsx, get_stock_list_from_json,
+                       get_total_rub_spent)
 
 
 @patch("src.utils.datetime.datetime")

@@ -315,8 +315,8 @@ if __name__ == '__main__':
             'Бонусы (включая кэшбэк)': 0, 'Округление на инвесткопилку': 0, 'Сумма операции с округлением': 90000.0
         }
         ]
-    date1 = datetime.datetime(2022, 7, 26, 0, 0,  0 )
-    date2 = datetime.datetime(2022, 7, 27, 0, 0,  0 )
+    date1 = datetime.datetime(2022, 7, 26, 0, 0,  0)
+    date2 = datetime.datetime(2022, 7, 27, 0, 0,  0)
     print(filter_by_date(ops, date1, date2))
     # cats = filter_by_category(ops, 'Транспорт')
     # print(len(cats), '\n', cats)

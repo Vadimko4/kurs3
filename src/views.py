@@ -1,8 +1,8 @@
+import datetime
 import json
 
 import numpy as np
 import pandas as pd
-import datetime
 
 from src.external_api import get_currency_too_rub_rate, get_rub_transaction_amount, get_stock_rub_price
 from src.logger import views_logger
@@ -163,7 +163,6 @@ def get_views_json(request_date: datetime) -> json:
     dict_to_json["greeting"] = get_greeting()
     dict_to_json["cards"] = get_cards_information(operations)
     dict_to_json["top_transactions"] = get_top_five_transactions(operations)
-
 
     # получаем список валют пользователя
     currencies = get_currency_list_from_json(PATH_TO_USER_SETTINGS_JSON_FILE)

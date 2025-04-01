@@ -1,16 +1,7 @@
 import numpy as np
 import pandas as pd
-import pytest
 
 from src.reports import spending_by_category
-
-#
-# @pytest.mark.parametrize('date, expected', [('20.07.2025', '20.04.2025'),
-#                                             ('04.04.2023', '04.01.2023'),
-#                                             ('15.02.2024', '15.11.2023'),
-#                                             ('31.12.2021', '30.09.2021')])
-# def test_get_date_three_month_earlier(date, expected):
-#     assert get_date_three_month_earlier(date) == expected
 
 
 def test_spending_by_category(test_rub_operation_list):

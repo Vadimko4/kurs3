@@ -1,8 +1,7 @@
+import datetime
 import json
 
 import numpy as np
-import datetime
-
 import pandas as pd
 
 from src.logger import services_logger
