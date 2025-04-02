@@ -5,6 +5,7 @@ description = ""
 authors = ["vadimko4 <vad.informat@gmail.com>"]
 readme = "README.md"
 
+
 [tool.poetry.dependencies]
 python = "^3.13"
 requests = "^2.32.3"
@@ -42,6 +43,12 @@ line_length = 119
 disallow_untyped_defs = true
 warn_return_any = true
 exclude = 'venv'
+
+
+[tool.coverage.report]
+exclude_also = [
+    "if __name__ == '__main__':"
+    ]
 
 
 [build-system]
