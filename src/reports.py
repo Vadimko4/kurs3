@@ -32,7 +32,7 @@ def spending_by_category(transactions: pd.DataFrame,
     result_transactions = transactions.loc[(start_date <= transactions['Дата операции']) &
                                            (transactions['Дата операции'] <= request_date) &
                                            (transactions['Статус'] == 'OK') &
-                                           (transactions['Категория'] == category)].copy()
+                                           (transactions['Категория'].str.lower() == category.lower())].copy()
 
     # меняем в датафрейм формат значения столбца 'Дата операции' с datetime обратно на str
     result_transactions['Дата операции'] = result_transactions['Дата операции'].dt.strftime("%d.%m.%Y %H:%M:%S")
@@ -135,6 +135,6 @@ if __name__ == '__main__':
         }
     ]
     df = pd.DataFrame(ops)
-    new_df = spending_by_category(df, 'Пополнения', '31.07.2025')
+    new_df = spending_by_category(df, 'Фастфуд', '31.07.2021')
     print(new_df.shape)
     print(new_df.head())

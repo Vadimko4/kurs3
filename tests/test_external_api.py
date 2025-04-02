@@ -35,7 +35,4 @@ def test_get_stock_rub_price(mock_get_rub_transaction_amount, mock_get_stock_pri
     expected_url = f"https://api.marketstack.com/v1/eod?access_key={stocks_api_key}"
     expected_params = {"symbols": 'TSLA'}
     mock_get_stock_price.assert_called_once_with(expected_url, params=expected_params)
-    mock_get_rub_transaction_amount.assert_called_once_with({
-        "Сумма операции": 100,
-        "Валюта операции": "USD"
-    })
+    mock_get_rub_transaction_amount.assert_called_once_with(100, "USD")

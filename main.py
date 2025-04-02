@@ -79,7 +79,7 @@ if __name__ == '__main__':
         req_date = foolproof_user_date_input()
 
     print("\nПрограмма: Какая категория расходов вас интересует?")
-    ctg = input("\nПользователь: ").title()
+    ctg = input("\nПользователь: ")
 
     print('\nПрограмма: Идёт формирование ответа на ваш запрос...')
     # transactions_dataframe = pd.read_excel(PATH_TO_OPERATIONS_XLSX_FILE)
